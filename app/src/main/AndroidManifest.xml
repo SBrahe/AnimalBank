@@ -9,7 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AnimalBank">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MapActivity"></activity>
+        <activity android:name=".InfoActivity" />
+        <activity android:name=".ListActivity" />
+        <activity android:name=".CameraActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
