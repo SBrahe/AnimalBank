@@ -5,32 +5,23 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
-import androidx.lifecycle.LiveData;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 //this code was heavily influenced by this android developer tutorial: https://developer.android.com/codelabs/android-training-livedata-viewmodel
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class Repository {
 
-    private static final String TAG = "cityRepository";
+    private static final String TAG = "Repository";
     public static Repository instance = null;
     //private final LiveData<List<Animal>> animals;
     private RequestQueue queue;
 
     private Repository(Application app) {
-        //db = CityDatabase.getDatabase(app.getApplicationContext());
-        //cities = db.cityDAO().getAll();
         if (queue == null) {
             queue = Volley.newRequestQueue(AnimalApp.getAppContext());
         }
