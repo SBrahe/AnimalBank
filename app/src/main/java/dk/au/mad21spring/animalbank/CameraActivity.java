@@ -17,7 +17,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -31,7 +31,6 @@ public class CameraActivity extends AppCompatActivity {
 
 
     PreviewView previewView;
-    ImageView imageView;
     private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA"};
     private Button btnAdd;
 
@@ -44,8 +43,9 @@ public class CameraActivity extends AppCompatActivity {
         btnAdd.setOnClickListener(v -> onAddPressed());
 
         //Init camera
+        this.previewView = findViewById(R.id.previewView);
         if (hasPermissions()) {
-            startCamera();
+            this.startCamera();
         } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, CAMERA_PERMISSION_REQUEST_CODE);
         }
@@ -76,7 +76,7 @@ public class CameraActivity extends AppCompatActivity {
                                 getRotation()).build();
         imagePreview.setSurfaceProvider(this.previewView.createSurfaceProvider());
         Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner)this,cameraSelector,imagePreview,imageCapture);
-        this.imageView.
+        //Camera variable not used?
     }
 
     //Checks whether permissions has already been granted by user.
@@ -92,6 +92,15 @@ public class CameraActivity extends AppCompatActivity {
     //Will be called when user has been asked for permissions.
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode==CAMERA_PERMISSION_REQUEST_CODE){
+            if(hasPermissions()){
+                this.startCamera();
+        }
+            else{
+
+            }
+            Toast.makeText(this, "Permissions are necessary.", Toast.LENGTH_SHORT).show();
+        }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
