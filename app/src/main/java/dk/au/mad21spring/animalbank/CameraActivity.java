@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -17,12 +19,15 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import static dk.au.mad21spring.animalbank.Constants.CAMERA_PERMISSION_REQUEST_CODE;
 
@@ -32,23 +37,42 @@ public class CameraActivity extends AppCompatActivity {
 
     PreviewView previewView;
     private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA"};
-    private Button btnAdd;
+    private Button addBtn;
+    private Button captureBtn;
+    private Executor executor = Executors.newSingleThreadExecutor();
+    private ImageView captureView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-        btnAdd = findViewById(R.id.addBtn);
-        //initialize add button
-        btnAdd.setOnClickListener(v -> onAddPressed());
+        this.addBtn = findViewById(R.id.addBtn);
+        this.addBtn.setOnClickListener(v -> onAddPressed());
+        this.captureBtn = findViewById(R.id.captureBtn);
+        this.captureView = findViewById(R.id.captureView);
 
-        //Init camera
+
+
+
         this.previewView = findViewById(R.id.previewView);
+        //Init camera
         if (hasPermissions()) {
             this.startCamera();
         } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, CAMERA_PERMISSION_REQUEST_CODE);
         }
+    }
+
+    private void onCaptureBtnPressed() {
+        this.showCapturedImage();
+    }
+
+    private void showCapturedImage() {
+        this.captureView.setImageBitmap(this.previewView.getBitmap());
+    }
+
+    private void swapCaptureAndPreviewVisibility(){
+
     }
 
 
@@ -77,6 +101,19 @@ public class CameraActivity extends AppCompatActivity {
         imagePreview.setSurfaceProvider(this.previewView.createSurfaceProvider());
         Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner)this,cameraSelector,imagePreview,imageCapture);
         //Camera variable not used?
+        this.captureBtn.setOnClickListener(v->{
+            imageCapture.takePicture(this.executor, new ImageCapture.OnImageCapturedCallback() {
+                @Override
+                public void onCaptureSuccess(@NonNull ImageProxy image) {
+                    showCapturedImage();
+                    super.onCaptureSuccess(image);
+                }
+                @Override
+                public void onError(@NonNull ImageCaptureException exception) {
+                    super.onError(exception);
+                }
+            });
+        });
     }
 
     //Checks whether permissions has already been granted by user.

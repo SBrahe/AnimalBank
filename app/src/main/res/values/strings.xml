@@ -10,5 +10,6 @@
     <string name="back">Back</string>
     <string name="delete">Delete</string>
     <string name="add">Add</string>
+    <string name="capture">Capture</string>
     <string name="input_animal_name">Animal name:</string>
 </resources>
