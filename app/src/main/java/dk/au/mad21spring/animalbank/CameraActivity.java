@@ -17,6 +17,7 @@ import androidx.lifecycle.LifecycleOwner;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -52,8 +53,6 @@ public class CameraActivity extends AppCompatActivity {
         this.captureView = findViewById(R.id.captureView);
 
 
-
-
         this.previewView = findViewById(R.id.previewView);
         //Init camera
         if (hasPermissions()) {
@@ -68,11 +67,12 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void showCapturedImage() {
-        this.captureView.setImageBitmap(this.previewView.getBitmap());
-    }
-
-    private void swapCaptureAndPreviewVisibility(){
-
+        Handler handler = new Handler(getApplicationContext().getMainLooper());
+        handler.post(() -> {
+            this.captureView.setImageBitmap(this.previewView.getBitmap());
+            captureView.setVisibility(View.VISIBLE);
+            previewView.setVisibility(View.GONE);
+        });
     }
 
 
@@ -99,15 +99,16 @@ public class CameraActivity extends AppCompatActivity {
                         .getDefaultDisplay().
                                 getRotation()).build();
         imagePreview.setSurfaceProvider(this.previewView.createSurfaceProvider());
-        Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner)this,cameraSelector,imagePreview,imageCapture);
+        Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, imagePreview, imageCapture);
         //Camera variable not used?
-        this.captureBtn.setOnClickListener(v->{
+        this.captureBtn.setOnClickListener(v -> {
             imageCapture.takePicture(this.executor, new ImageCapture.OnImageCapturedCallback() {
                 @Override
                 public void onCaptureSuccess(@NonNull ImageProxy image) {
                     showCapturedImage();
                     super.onCaptureSuccess(image);
                 }
+
                 @Override
                 public void onError(@NonNull ImageCaptureException exception) {
                     super.onError(exception);
@@ -118,8 +119,8 @@ public class CameraActivity extends AppCompatActivity {
 
     //Checks whether permissions has already been granted by user.
     boolean hasPermissions() {
-        for(String permission : REQUIRED_PERMISSIONS){
-            if(ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED){
+        for (String permission : REQUIRED_PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
                 return false;
             }
         }
@@ -129,11 +130,10 @@ public class CameraActivity extends AppCompatActivity {
     //Will be called when user has been asked for permissions.
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode==CAMERA_PERMISSION_REQUEST_CODE){
-            if(hasPermissions()){
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (hasPermissions()) {
                 this.startCamera();
-        }
-            else{
+            } else {
 
             }
             Toast.makeText(this, "Permissions are necessary.", Toast.LENGTH_SHORT).show();
