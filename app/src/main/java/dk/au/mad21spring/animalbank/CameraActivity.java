@@ -36,10 +36,11 @@ import static dk.au.mad21spring.animalbank.Constants.CAMERA_PERMISSION_REQUEST_C
 public class CameraActivity extends AppCompatActivity {
 
 
-    PreviewView previewView;
+    PreviewView viewFinder;
     private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA"};
     private Button addBtn;
     private Button captureBtn;
+    private Button discardCaptureBtn;
     private Executor executor = Executors.newSingleThreadExecutor();
     private ImageView captureView;
 
@@ -50,10 +51,12 @@ public class CameraActivity extends AppCompatActivity {
         this.addBtn = findViewById(R.id.addBtn);
         this.addBtn.setOnClickListener(v -> onAddPressed());
         this.captureBtn = findViewById(R.id.captureBtn);
+        this.discardCaptureBtn = findViewById(R.id.discardCaptureBtn);
+        this.discardCaptureBtn.setOnClickListener(v -> onDiscardPressed());
         this.captureView = findViewById(R.id.captureView);
 
 
-        this.previewView = findViewById(R.id.previewView);
+        this.viewFinder = findViewById(R.id.viewFinder);
         //Init camera
         if (hasPermissions()) {
             this.startCamera();
@@ -62,16 +65,18 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
-    private void onCaptureBtnPressed() {
-        this.showCapturedImage();
+    private void onDiscardPressed() {
+        captureView.setVisibility(View.GONE);
+        viewFinder.setVisibility(View.VISIBLE);
     }
+
 
     private void showCapturedImage() {
         Handler handler = new Handler(getApplicationContext().getMainLooper());
         handler.post(() -> {
-            this.captureView.setImageBitmap(this.previewView.getBitmap());
+            this.captureView.setImageBitmap(this.viewFinder.getBitmap());
             captureView.setVisibility(View.VISIBLE);
-            previewView.setVisibility(View.GONE);
+            viewFinder.setVisibility(View.GONE);
         });
     }
 
@@ -98,7 +103,7 @@ public class CameraActivity extends AppCompatActivity {
                 .setTargetRotation(this.getWindowManager()
                         .getDefaultDisplay().
                                 getRotation()).build();
-        imagePreview.setSurfaceProvider(this.previewView.createSurfaceProvider());
+        imagePreview.setSurfaceProvider(this.viewFinder.createSurfaceProvider());
         Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, imagePreview, imageCapture);
         //Camera variable not used?
         this.captureBtn.setOnClickListener(v -> {
