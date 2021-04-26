@@ -35,6 +35,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
+
+
+
+
         <Button
             android:id="@+id/discardCaptureBtn"
             android:layout_width="wrap_content"
@@ -61,6 +65,8 @@
             android:layout_marginTop="0dp"
             android:layout_marginBottom="0dp"
             android:text="@string/capture" />
+
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

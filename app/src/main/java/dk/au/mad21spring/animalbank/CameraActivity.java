@@ -31,6 +31,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import static dk.au.mad21spring.animalbank.Constants.CAMERA_PERMISSION_REQUEST_CODE;
+import static dk.au.mad21spring.animalbank.Constants.IMAGE_EXTRA_NAME;
 
 //Inspiration drawn from https://github.com/akhilbattula/android-camerax-java/blob/98593fbd93db214bb5551106f95e4fed348d42d5/app/src/main/java/com/akhil/cameraxjavademo/MainActivity.java#L149
 public class CameraActivity extends AppCompatActivity {
@@ -106,10 +107,14 @@ public class CameraActivity extends AppCompatActivity {
         imagePreview.setSurfaceProvider(this.viewFinder.createSurfaceProvider());
         Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, imagePreview, imageCapture);
         //Camera variable not used?
+
+        //Alternative one
         this.captureBtn.setOnClickListener(v -> {
             imageCapture.takePicture(this.executor, new ImageCapture.OnImageCapturedCallback() {
                 @Override
                 public void onCaptureSuccess(@NonNull ImageProxy image) {
+                    image.getImage().
+                    //Should probably use the captured image. Currently just using the bitmap from the preview.
                     showCapturedImage();
                     super.onCaptureSuccess(image);
                 }
@@ -120,6 +125,28 @@ public class CameraActivity extends AppCompatActivity {
                 }
             });
         });
+
+        //Alternative two
+        this.addBtn.setOnClickListener(v -> {
+            imageCapture.takePicture(this.executor, new ImageCapture.OnImageCapturedCallback() {
+                @Override
+                public void onCaptureSuccess(@NonNull ImageProxy image) {
+                    Intent intent = new Intent(getCameraActivity(), AddActivity.class);
+                    intent.putExtra(IMAGE_EXTRA_NAME, viewFinder.getBitmap());
+                    startActivity(intent);
+                    super.onCaptureSuccess(image);
+                }
+
+                @Override
+                public void onError(@NonNull ImageCaptureException exception) {
+                    super.onError(exception);
+                }
+            });
+
+
+        });
+
+
     }
 
     //Checks whether permissions has already been granted by user.
@@ -154,6 +181,10 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    CameraActivity getCameraActivity() {
+        return this;
     }
 
 }
