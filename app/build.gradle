@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "dk.au.mad21spring.animalbank"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -42,4 +42,11 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     testImplementation 'junit:junit:4.13.2'
     implementation platform('com.google.firebase:firebase-bom:27.1.0')
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    testImplementation 'junit:junit:4.+'
+    //Dependencies as described in the camera x docs
+    def camerax_version = "1.0.0-beta07"
+    implementation "androidx.camera:camera-camera2:$camerax_version"
+    implementation "androidx.camera:camera-lifecycle:$camerax_version"
+    implementation "androidx.camera:camera-view:1.0.0-alpha14"
 }
