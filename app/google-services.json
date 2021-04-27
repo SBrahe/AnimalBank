@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1012244476684",
+    "project_id": "animalbank-22613",
+    "storage_bucket": "animalbank-22613.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1012244476684:android:68c55fce8d6fa46341cf29",
+        "android_client_info": {
+          "package_name": "dk.au.mad21spring.animalbank"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1012244476684-251v6ppbu24925r3c5pl569v3pid6fug.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJdkU0b-Jq8g4PMmUkc032wGL2isnpKV0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1012244476684-251v6ppbu24925r3c5pl569v3pid6fug.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
