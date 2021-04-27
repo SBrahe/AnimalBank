@@ -62,13 +62,23 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
 
     private void goToCaptureImageMode() {
         this.discardCapturedImage();
-        this.loadFragment(new CaptureImageFragment());
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new CaptureImageFragment()).commit();
     }
 
     private void goToAddAnimalMode() {
         this.showCapturedImage();
-        this.loadFragment(new AddAnimalFragment());
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).addToBackStack("asdf").commit();
     }
+
+    @Override
+    public void onBackPressed() {
+            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                this.onDiscardPressed();
+            } else {
+                super.onBackPressed();
+            }
+    }
+
 
     private void showCapturedImage() {
         Handler handler = new Handler(getApplicationContext().getMainLooper());
