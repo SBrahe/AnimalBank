@@ -4,7 +4,9 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 
-//note: ALL code in this hand-in has been inspired by external sources. Ideas and solutions have been inspired from many places including the MAD lessons or code forums in the web. I claim none of this as my own.
+// Note: Some code in this hand-in has been inspired by external sources.
+// Sources include the MAD lessons as well as code forums on the web.
+// Links to important external resources are provided directly in the code.
 
 public class AnimalApp extends Application {
 
