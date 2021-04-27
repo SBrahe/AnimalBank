@@ -42,8 +42,8 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
     private PreviewView viewFinder;
     private ImageView captureView;
     ImageCapture imageCapture;
-    private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA"};
-    private Executor executor = Executors.newSingleThreadExecutor();
+    private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA", "android.permission.ACCESS_FINE_LOCATION"};
+    private final Executor executor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,18 +67,17 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
 
     private void goToAddAnimalMode() {
         this.showCapturedImage();
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).addToBackStack("asdf").commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).addToBackStack(null).commit();
     }
 
     @Override
     public void onBackPressed() {
-            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                this.onDiscardPressed();
-            } else {
-                super.onBackPressed();
-            }
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            this.onDiscardPressed();
+        } else {
+            super.onBackPressed();
+        }
     }
-
 
     private void showCapturedImage() {
         Handler handler = new Handler(getApplicationContext().getMainLooper());
