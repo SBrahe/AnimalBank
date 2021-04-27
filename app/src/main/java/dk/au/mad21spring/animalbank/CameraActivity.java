@@ -12,8 +12,11 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -34,29 +37,19 @@ import static dk.au.mad21spring.animalbank.Constants.CAMERA_PERMISSION_REQUEST_C
 import static dk.au.mad21spring.animalbank.Constants.IMAGE_EXTRA_NAME;
 
 //Inspiration drawn from https://github.com/akhilbattula/android-camerax-java/blob/98593fbd93db214bb5551106f95e4fed348d42d5/app/src/main/java/com/akhil/cameraxjavademo/MainActivity.java#L149
-public class CameraActivity extends AppCompatActivity {
+public class CameraActivity extends AppCompatActivity implements AddAnimalFragment.AddAnimalFragmentListener, CaptureImageFragment.CaptureImageFragmentListener {
 
-
-    PreviewView viewFinder;
-    private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA"};
-    private Button addBtn;
-    private Button captureBtn;
-    private Button discardCaptureBtn;
-    private Executor executor = Executors.newSingleThreadExecutor();
+    private PreviewView viewFinder;
     private ImageView captureView;
+    ImageCapture imageCapture;
+    private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA"};
+    private Executor executor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-        this.addBtn = findViewById(R.id.addBtn);
-        this.addBtn.setOnClickListener(v -> onAddPressed());
-        this.captureBtn = findViewById(R.id.captureBtn);
-        this.discardCaptureBtn = findViewById(R.id.discardCaptureBtn);
-        this.discardCaptureBtn.setOnClickListener(v -> onDiscardPressed());
         this.captureView = findViewById(R.id.captureView);
-
-
         this.viewFinder = findViewById(R.id.viewFinder);
         //Init camera
         if (hasPermissions()) {
@@ -64,13 +57,18 @@ public class CameraActivity extends AppCompatActivity {
         } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, CAMERA_PERMISSION_REQUEST_CODE);
         }
+        this.goToCaptureImageMode();
     }
 
-    private void onDiscardPressed() {
-        captureView.setVisibility(View.GONE);
-        viewFinder.setVisibility(View.VISIBLE);
+    private void goToCaptureImageMode() {
+        this.discardCapturedImage();
+        this.loadFragment(new CaptureImageFragment());
     }
 
+    private void goToAddAnimalMode() {
+        this.showCapturedImage();
+        this.loadFragment(new AddAnimalFragment());
+    }
 
     private void showCapturedImage() {
         Handler handler = new Handler(getApplicationContext().getMainLooper());
@@ -81,6 +79,10 @@ public class CameraActivity extends AppCompatActivity {
         });
     }
 
+    private void discardCapturedImage() {
+        this.captureView.setVisibility(View.GONE);
+        this.viewFinder.setVisibility(View.VISIBLE);
+    }
 
     void startCamera() {
         final ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
@@ -100,53 +102,12 @@ public class CameraActivity extends AppCompatActivity {
     void bindImagePreview(@NonNull ProcessCameraProvider cameraProvider) {
         Preview imagePreview = new Preview.Builder().build();
         CameraSelector cameraSelector = new CameraSelector.Builder().build();
-        ImageCapture imageCapture = new ImageCapture.Builder()
+        this.imageCapture = new ImageCapture.Builder()
                 .setTargetRotation(this.getWindowManager()
                         .getDefaultDisplay().
                                 getRotation()).build();
         imagePreview.setSurfaceProvider(this.viewFinder.createSurfaceProvider());
         Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, imagePreview, imageCapture);
-        //Camera variable not used?
-
-        //Alternative one
-        this.captureBtn.setOnClickListener(v -> {
-            imageCapture.takePicture(this.executor, new ImageCapture.OnImageCapturedCallback() {
-                @Override
-                public void onCaptureSuccess(@NonNull ImageProxy image) {
-                    image.getImage().
-                    //Should probably use the captured image. Currently just using the bitmap from the preview.
-                    showCapturedImage();
-                    super.onCaptureSuccess(image);
-                }
-
-                @Override
-                public void onError(@NonNull ImageCaptureException exception) {
-                    super.onError(exception);
-                }
-            });
-        });
-
-        //Alternative two
-        this.addBtn.setOnClickListener(v -> {
-            imageCapture.takePicture(this.executor, new ImageCapture.OnImageCapturedCallback() {
-                @Override
-                public void onCaptureSuccess(@NonNull ImageProxy image) {
-                    Intent intent = new Intent(getCameraActivity(), AddActivity.class);
-                    intent.putExtra(IMAGE_EXTRA_NAME, viewFinder.getBitmap());
-                    startActivity(intent);
-                    super.onCaptureSuccess(image);
-                }
-
-                @Override
-                public void onError(@NonNull ImageCaptureException exception) {
-                    super.onError(exception);
-                }
-            });
-
-
-        });
-
-
     }
 
     //Checks whether permissions has already been granted by user.
@@ -173,18 +134,29 @@ public class CameraActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    public void onAddPressed() {
-        Intent intent = new Intent(this, AddActivity.class);
-        startActivity(intent);
+    private void loadFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, fragment).commit();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    public void onDiscardPressed() {
+        this.goToCaptureImageMode();
     }
 
-    CameraActivity getCameraActivity() {
-        return this;
-    }
+    @Override
+    public void onCaptureImagePressed() {
+        imageCapture.takePicture(this.executor, new ImageCapture.OnImageCapturedCallback() {
+            @Override
+            public void onCaptureSuccess(@NonNull ImageProxy image) {
+                //Should probably use the captured image. Currently just using the bitmap from the preview.
+                goToAddAnimalMode();
+                super.onCaptureSuccess(image);
+            }
 
+            @Override
+            public void onError(@NonNull ImageCaptureException exception) {
+                super.onError(exception);
+            }
+        });
+    }
 }

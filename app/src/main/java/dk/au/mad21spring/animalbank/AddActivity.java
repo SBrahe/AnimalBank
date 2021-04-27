@@ -41,10 +41,6 @@ public class AddActivity extends AppCompatActivity {
         });
 
 
-
-        Intent intent = getIntent();
-        Bitmap capturedImg = (Bitmap) intent.getParcelableExtra(IMAGE_EXTRA_NAME);
-        captureView.setImageBitmap(capturedImg);
     }
 
     public void onEnterPressed() {
