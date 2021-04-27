@@ -60,6 +60,11 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
         this.goToCaptureImageMode();
     }
 
+
+    /*----------------------------------------------------------------------------------------*/
+    /*---------------------------------- STATE HANDLING --------------------------------------*/
+    /*----------------------------------------------------------------------------------------*/
+
     private void goToCaptureImageMode() {
         this.discardCapturedImage();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new CaptureImageFragment()).commit();
@@ -78,6 +83,49 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
             super.onBackPressed();
         }
     }
+
+    @Override
+    public void onDiscardPressed() {
+        this.goToCaptureImageMode();
+    }
+
+
+
+    /*----------------------------------------------------------------------------------------*/
+    /*----------------------------------- PERMISSIONS ----------------------------------------*/
+    /*----------------------------------------------------------------------------------------*/
+
+    //Checks whether permissions has already been granted by user.
+    boolean hasPermissions() {
+        for (String permission : REQUIRED_PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //Will be called when user has been asked for permissions.
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (hasPermissions()) {
+                this.startCamera();
+            } else {
+            Toast.makeText(this, "Permissions are necessary.", Toast.LENGTH_SHORT).show();
+            //TODO: Needs to handle case when user did not give permissions.
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+
+
+
+
+    /*----------------------------------------------------------------------------------------*/
+    /*-------------------------------------- CAMERA ------------------------------------------*/
+    /*----------------------------------------------------------------------------------------*/
 
     private void showCapturedImage() {
         Handler handler = new Handler(getApplicationContext().getMainLooper());
@@ -119,38 +167,6 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
         Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, imagePreview, imageCapture);
     }
 
-    //Checks whether permissions has already been granted by user.
-    boolean hasPermissions() {
-        for (String permission : REQUIRED_PERMISSIONS) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    //Will be called when user has been asked for permissions.
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
-            if (hasPermissions()) {
-                this.startCamera();
-            } else {
-            Toast.makeText(this, "Permissions are necessary.", Toast.LENGTH_SHORT).show();
-            }
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    private void loadFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, fragment).commit();
-    }
-
-    @Override
-    public void onDiscardPressed() {
-        this.goToCaptureImageMode();
-    }
-
     @Override
     public void onCaptureImagePressed() {
         imageCapture.takePicture(this.executor, new ImageCapture.OnImageCapturedCallback() {
@@ -160,7 +176,6 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
                 goToAddAnimalMode();
                 super.onCaptureSuccess(image);
             }
-
             @Override
             public void onError(@NonNull ImageCaptureException exception) {
                 super.onError(exception);
