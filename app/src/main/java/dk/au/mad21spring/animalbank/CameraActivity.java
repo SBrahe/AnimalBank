@@ -21,6 +21,8 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -138,6 +140,10 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
     /*-------------------------------------- LOCATION ----------------------------------------*/
     /*----------------------------------------------------------------------------------------*/
 
+    public Location getLocationAtCapture(){
+        return this.locationAtCapture;
+    }
+
     @SuppressLint("MissingPermission")
     private void getLocation(OnSuccessListener<Location> listener) {
         if (hasPermissions()) {
@@ -151,6 +157,9 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
     /*----------------------------------------------------------------------------------------*/
     /*--------------------------------------- CAMERA -----------------------------------------*/
     /*----------------------------------------------------------------------------------------*/
+    public Bitmap getCapturedImage(){
+        return ((BitmapDrawable)this.captureView.getDrawable()).getBitmap();
+    }
 
     private void showCapturedImage() {
         Handler handler = new Handler(getApplicationContext().getMainLooper());
@@ -201,6 +210,7 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
                 getLocation(new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
+                        //TODO: Handle if a null location is received.
                         locationAtCapture = location;
                         Log.e("locationatcapture",location.toString());
                     }

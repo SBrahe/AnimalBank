@@ -3,6 +3,8 @@ package dk.au.mad21spring.animalbank;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -54,8 +56,11 @@ public class AddAnimalFragment extends Fragment {
 
     public void onEnterPressed() {
         //TODO: Save image to db along with geodata and animal name
-        //Image can be grabbed from context.
-        Intent intent = new Intent(getActivity(), InfoActivity.class);
+        CameraActivity activity = (CameraActivity)getActivity();
+        Location location = activity.getLocationAtCapture();
+        Bitmap image = activity.getCapturedImage();
+        String animalName = this.txtEditAnimalName.getText().toString();
+        Intent intent = new Intent(activity, InfoActivity.class);
         startActivity(intent);
     }
 }
