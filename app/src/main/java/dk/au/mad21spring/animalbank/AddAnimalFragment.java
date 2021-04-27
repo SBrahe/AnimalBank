@@ -54,6 +54,7 @@ public class AddAnimalFragment extends Fragment {
 
     public void onEnterPressed() {
         //TODO: Save image to db along with geodata and animal name
+        //Image can be grabbed from context.
         Intent intent = new Intent(getActivity(), InfoActivity.class);
         startActivity(intent);
     }
