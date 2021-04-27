@@ -136,9 +136,8 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
             if (hasPermissions()) {
                 this.startCamera();
             } else {
-
-            }
             Toast.makeText(this, "Permissions are necessary.", Toast.LENGTH_SHORT).show();
+            }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
