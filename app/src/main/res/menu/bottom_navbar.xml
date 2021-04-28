@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--Inspiration from https://www.youtube.com/watch?v=tPV8xA7m-iw -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_camera"
+        android:icon="@drawable/ic_camera"
+        android:title=""/>
+    <item
+        android:id="@+id/nav_location"
+        android:icon="@drawable/ic_location"
+        android:title=""/>
+    <item
+        android:id="@+id/nav_list"
+        android:icon="@drawable/ic_list"
+        android:title=""/>
+
+</menu>
