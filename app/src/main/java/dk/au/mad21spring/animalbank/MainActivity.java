@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottom_navbar = findViewById(R.id.bottom_navbar);
         bottom_navbar.setOnNavigationItemSelectedListener(navbarListenser);
+
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navbarListenser =
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
                     switch (item.getItemId()){
                         case R.id.nav_camera:
-
+                            selectedFragment = new CameraParentFragment();
                             break;
                         case R.id.nav_location:
                             selectedFragment = new MapsFragment();
