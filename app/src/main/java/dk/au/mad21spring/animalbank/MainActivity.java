@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case R.id.nav_list:
                             selectedFragment = new ListFragment();
-
+                            break;
                     }
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                             selectedFragment).commit();
