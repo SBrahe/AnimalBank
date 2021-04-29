@@ -83,19 +83,19 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
 
     private void goToCaptureImageMode() {
         this.discardCapturedImage();
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new CaptureImageFragment()).commit();
+        this.getChildFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new CaptureImageFragment()).commit();
     }
 
     private void goToAddAnimalMode() {
         this.showCapturedImage();
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).addToBackStack(AddAnimalFragment.tag).commit();
+        this.getChildFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).addToBackStack(AddAnimalFragment.tag).commit();
     }
 
     private void addReturnFromAddAnimalListener(){
-        getActivity().getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+        this.getChildFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
-                AddAnimalFragment a = (AddAnimalFragment)getActivity().getSupportFragmentManager().findFragmentByTag(AddAnimalFragment.tag);
+                AddAnimalFragment a = (AddAnimalFragment)getChildFragmentManager().findFragmentByTag(AddAnimalFragment.tag);
                 if(a==null)
                 {
                     //Make sure camera is active if user returns back from the add animal fragment.

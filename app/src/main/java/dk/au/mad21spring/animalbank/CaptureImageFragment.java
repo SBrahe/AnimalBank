@@ -20,18 +20,12 @@ public class CaptureImageFragment extends Fragment {
     Button captureBtn;
 
     @Override
-    public void onAttach(@NonNull Context context) {
-        //Activity listens for events.
-        this.listener = (CaptureImageFragmentListener)context;
-        super.onAttach(context);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_capture_image, container, false);
         captureBtn = view.findViewById(R.id.captureBtn);
-        captureBtn.setOnClickListener(v -> listener.onCaptureImagePressed());
+        CameraParentFragment cameraParentFragment = (CameraParentFragment)this.getParentFragment();
+        captureBtn.setOnClickListener(v -> cameraParentFragment.onCaptureImagePressed());
         return view;
     }
 }
