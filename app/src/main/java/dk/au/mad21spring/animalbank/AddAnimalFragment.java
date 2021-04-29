@@ -30,12 +30,6 @@ public class AddAnimalFragment extends Fragment {
     private EditText txtEditAnimalName;
 
     @Override
-    public void onAttach(@NonNull Context context) {
-        listener = (AddAnimalFragmentListener)context;
-        super.onAttach(context);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_animal, container, false);
