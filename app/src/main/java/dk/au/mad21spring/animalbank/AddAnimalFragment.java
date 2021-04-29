@@ -24,6 +24,7 @@ public class AddAnimalFragment extends Fragment {
     public interface AddAnimalFragmentListener {
         public void onDiscardPressed();
     }
+    public final static String tag = "AddAnimalFragment";
 
     private AddAnimalFragmentListener listener;
     private EditText txtEditAnimalName;
@@ -56,11 +57,11 @@ public class AddAnimalFragment extends Fragment {
 
     public void onEnterPressed() {
         //TODO: Save image to db along with geodata and animal name
-        CameraActivity activity = (CameraActivity)getActivity();
-        Location location = activity.getLocationAtCapture();
-        Bitmap image = activity.getCapturedImage();
+        CameraParentFragment cameraParentFragment = (CameraParentFragment)this.getParentFragment();
+        Location location = cameraParentFragment.getLocationAtCapture();
+        Bitmap image = cameraParentFragment.getCapturedImage();
         String animalName = this.txtEditAnimalName.getText().toString();
-        Intent intent = new Intent(activity, InfoActivity.class);
+        Intent intent = new Intent(getActivity(), InfoActivity.class);
         startActivity(intent);
     }
 }

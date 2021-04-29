@@ -1,7 +1,7 @@
 package dk.au.mad21spring.animalbank;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
@@ -13,13 +13,10 @@ import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -27,8 +24,9 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -37,7 +35,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -46,7 +43,7 @@ import static dk.au.mad21spring.animalbank.Constants.CAMERA_PERMISSION_REQUEST_C
 import static dk.au.mad21spring.animalbank.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 
 //Inspiration drawn from https://github.com/akhilbattula/android-camerax-java/blob/98593fbd93db214bb5551106f95e4fed348d42d5/app/src/main/java/com/akhil/cameraxjavademo/MainActivity.java#L149
-public class CameraActivity extends AppCompatActivity implements AddAnimalFragment.AddAnimalFragmentListener, CaptureImageFragment.CaptureImageFragmentListener {
+public class CameraParentFragment extends Fragment implements AddAnimalFragment.AddAnimalFragmentListener, CaptureImageFragment.CaptureImageFragmentListener {
 
     private PreviewView viewFinder;
     private ImageView captureView;
@@ -56,23 +53,27 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
     private FusedLocationProviderClient fusedLocationClient;
     private Location locationAtCapture;
 
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
-        this.captureView = findViewById(R.id.captureView);
-        this.viewFinder = findViewById(R.id.viewFinder);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_camera_parent, container, false);
+        this.captureView = view.findViewById(R.id.captureView);
+        this.viewFinder = view.findViewById(R.id.viewFinder);
 
         //Init camera
         if (hasPermissions()) {
             this.startCamera();
         } else {
-            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, CAMERA_PERMISSION_REQUEST_CODE);
+            ActivityCompat.requestPermissions(getActivity(), REQUIRED_PERMISSIONS, CAMERA_PERMISSION_REQUEST_CODE);
         }
         //For retrieving location data:
-        this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         //Make sure the UI starts out in the correct state:
         this.goToCaptureImageMode();
+        //Init back stack handling.
+        this.addReturnFromAddAnimalListener();
+        return view;
     }
 
 
@@ -82,22 +83,28 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
 
     private void goToCaptureImageMode() {
         this.discardCapturedImage();
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new CaptureImageFragment()).commit();
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new CaptureImageFragment()).commit();
     }
 
     private void goToAddAnimalMode() {
         this.showCapturedImage();
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).addToBackStack(null).commit();
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).addToBackStack(AddAnimalFragment.tag).commit();
     }
 
-    @Override
-    public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            this.onDiscardPressed();
-        } else {
-            super.onBackPressed();
-        }
+    private void addReturnFromAddAnimalListener(){
+        getActivity().getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                AddAnimalFragment a = (AddAnimalFragment)getActivity().getSupportFragmentManager().findFragmentByTag(AddAnimalFragment.tag);
+                if(a==null)
+                {
+                    //Make sure camera is active if user returns back from the add animal fragment.
+                    goToCaptureImageMode();
+                }
+            }
+        });
     }
+
 
     @Override
     public void onDiscardPressed() {
@@ -113,7 +120,7 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
     //Checks whether permissions has already been granted by user.
     boolean hasPermissions() {
         for (String permission : REQUIRED_PERMISSIONS) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(getActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
                 return false;
             }
         }
@@ -127,7 +134,7 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
             if (hasPermissions()) {
                 this.startCamera();
             } else {
-                Toast.makeText(this, "Permissions are necessary.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Permissions are necessary.", Toast.LENGTH_SHORT).show();
                 //TODO: Needs to handle case when user did not give permissions.
             }
         }
@@ -147,9 +154,9 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
     @SuppressLint("MissingPermission")
     private void getLocation(OnSuccessListener<Location> listener) {
         if (hasPermissions()) {
-            this.fusedLocationClient.getLastLocation().addOnSuccessListener(this, listener);
+            this.fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), listener);
         } else {
-            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, LOCATION_PERMISSION_REQUEST_CODE);
+            ActivityCompat.requestPermissions(getActivity(), REQUIRED_PERMISSIONS, LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
 
@@ -162,7 +169,7 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
     }
 
     private void showCapturedImage() {
-        Handler handler = new Handler(getApplicationContext().getMainLooper());
+        Handler handler = new Handler(getActivity().getApplicationContext().getMainLooper());
         handler.post(() -> {
             this.captureView.setImageBitmap(this.viewFinder.getBitmap());
             captureView.setVisibility(View.VISIBLE);
@@ -176,7 +183,7 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
     }
 
     void startCamera() {
-        final ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+        final ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(getActivity());
         cameraProviderFuture.addListener(() -> {
             ProcessCameraProvider cameraProvider = null;
             try {
@@ -187,14 +194,14 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
                 e.printStackTrace();
             }
             this.bindImagePreview(cameraProvider);
-        }, ContextCompat.getMainExecutor(this));
+        }, ContextCompat.getMainExecutor(getActivity()));
     }
 
     void bindImagePreview(@NonNull ProcessCameraProvider cameraProvider) {
         Preview imagePreview = new Preview.Builder().build();
         CameraSelector cameraSelector = new CameraSelector.Builder().build();
         this.imageCapture = new ImageCapture.Builder()
-                .setTargetRotation(this.getWindowManager()
+                .setTargetRotation(getActivity().getWindowManager()
                         .getDefaultDisplay().
                                 getRotation()).build();
         imagePreview.setSurfaceProvider(this.viewFinder.createSurfaceProvider());
