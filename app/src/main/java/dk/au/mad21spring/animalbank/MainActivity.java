@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
                             selectedFragment = new MapsFragment();
                             break;
                         case R.id.nav_list:
+                            selectedFragment = new ListFragment();
 
                     }
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,

@@ -37,8 +37,6 @@
         </intent-filter>
         </activity>
         <activity android:name=".InfoActivity" />
-        <activity android:name=".CameraActivity">
-        </activity>
     </application>
 
 </manifest>
