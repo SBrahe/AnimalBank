@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dk.au.mad21spring.animalbank">
-    <uses-permission android:name="android.permission.CAMERA"/>
-    
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,10 +12,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AnimalBank">
-        <activity
-            android:name=".AddActivity"
-            android:noHistory="true"
-            />
         <activity android:name=".MapActivity" />
         <activity android:name=".InfoActivity" />
         <activity android:name=".ListActivity" />
