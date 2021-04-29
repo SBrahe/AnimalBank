@@ -23,6 +23,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,13 +92,12 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
         this.getChildFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).addToBackStack(AddAnimalFragment.tag).commit();
     }
 
-    private void addReturnFromAddAnimalListener(){
+    private void addReturnFromAddAnimalListener() {
         this.getChildFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
-                AddAnimalFragment a = (AddAnimalFragment)getChildFragmentManager().findFragmentByTag(AddAnimalFragment.tag);
-                if(a==null)
-                {
+                AddAnimalFragment a = (AddAnimalFragment) getChildFragmentManager().findFragmentByTag(AddAnimalFragment.tag);
+                if (a == null) {
                     //Make sure camera is active if user returns back from the add animal fragment.
                     goToCaptureImageMode();
                 }
@@ -147,7 +147,7 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
     /*-------------------------------------- LOCATION ----------------------------------------*/
     /*----------------------------------------------------------------------------------------*/
 
-    public Location getLocationAtCapture(){
+    public Location getLocationAtCapture() {
         return this.locationAtCapture;
     }
 
@@ -164,17 +164,16 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
     /*----------------------------------------------------------------------------------------*/
     /*--------------------------------------- CAMERA -----------------------------------------*/
     /*----------------------------------------------------------------------------------------*/
-    public Bitmap getCapturedImage(){
-        return ((BitmapDrawable)this.captureView.getDrawable()).getBitmap();
+    public Bitmap getCapturedImage() {
+        return ((BitmapDrawable) this.captureView.getDrawable()).getBitmap();
     }
 
     private void showCapturedImage() {
-        Handler handler = new Handler(getActivity().getApplicationContext().getMainLooper());
-        handler.post(() -> {
-            this.captureView.setImageBitmap(this.viewFinder.getBitmap());
+        Handler Handler = new Handler(Looper.getMainLooper());
+        Handler.post(()->{Bitmap bitmap = viewFinder.getBitmap();
+            captureView.setImageBitmap(bitmap);
             captureView.setVisibility(View.VISIBLE);
-            viewFinder.setVisibility(View.GONE);
-        });
+            viewFinder.setVisibility(View.GONE);});
     }
 
     private void discardCapturedImage() {
@@ -219,7 +218,7 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
                     public void onSuccess(Location location) {
                         //TODO: Handle if a null location is received.
                         locationAtCapture = location;
-                        Log.e("locationatcapture",location.toString());
+                        Log.e("locationatcapture", location.toString());
                     }
                 });
                 goToAddAnimalMode();

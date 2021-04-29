@@ -36,8 +36,8 @@ public class AddAnimalFragment extends Fragment {
         txtEditAnimalName = view.findViewById(R.id.editAnimalNameText);
         txtEditAnimalName.requestFocus();
         //open keyboard
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        //InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 
         //make enter open info view
         txtEditAnimalName.setOnEditorActionListener((v, actionId, event) -> {
