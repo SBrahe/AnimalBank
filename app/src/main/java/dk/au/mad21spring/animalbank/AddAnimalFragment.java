@@ -3,6 +3,7 @@ package dk.au.mad21spring.animalbank;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,27 +31,22 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-@RequiresApi(api = Build.VERSION_CODES.N)
 public class AddAnimalFragment extends Fragment {
 
-    private static final String TAG = "AddAnimalFragment";
+    public static final String TAG = "AddAnimalFragment";
 
     FirebaseFirestore db;
     Repository repo;
     private AddAnimalFragmentListener listener;
     private EditText txtEditAnimalName;
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        listener = (AddAnimalFragmentListener) context;
-        super.onAttach(context);
-    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         db = FirebaseFirestore.getInstance();
-        repo = Repository.getAnimalRepository();
+        repo = Repository.getAnimalRepository(getActivity().getApplicationContext());
 
         View view = inflater.inflate(R.layout.fragment_add_animal, container, false);
         txtEditAnimalName = view.findViewById(R.id.editAnimalNameText);
@@ -80,17 +76,16 @@ public class AddAnimalFragment extends Fragment {
 
     //code inspired by https://firebase.google.com/docs/storage/android/upload-files
     public void addAnimalToDB(DocumentReference animalRef) {
-        CameraActivity activity = (CameraActivity) getActivity();
-
+        CameraParentFragment cameraParentFragment = (CameraParentFragment)this.getParentFragment();
         //add name and location to animal in firestore
         Map<String, Object> animalMap = new HashMap<>();
         animalMap.put("name", txtEditAnimalName.getText().toString());
-        animalMap.put("location", activity.getLocationAtCapture());
+        animalMap.put("location", cameraParentFragment.getLocationAtCapture());
         animalMap.put("date",  Calendar.getInstance().getTime());
         animalRef.set(animalMap);
 
         //get image from activity and upload to firebase storage
-        Bitmap image = activity.getCapturedImage();
+        Bitmap image = cameraParentFragment.getCapturedImage();
         repo.uploadImage(image, imageUri -> {
             animalRef.update("imageUri", imageUri.toString());
             Log.d(TAG, "uploadImage: uploaded image and update db, imageuri: " + imageUri);

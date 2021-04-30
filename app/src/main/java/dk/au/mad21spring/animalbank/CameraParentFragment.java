@@ -88,15 +88,20 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
     }
 
     private void goToAddAnimalMode() {
-        this.showCapturedImage();
-        this.getChildFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).addToBackStack(AddAnimalFragment.tag).commit();
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(() -> {
+            this.showCapturedImage();
+            this.getChildFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).commitNow();
+        });
     }
+
+
 
     private void addReturnFromAddAnimalListener() {
         this.getChildFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
-                AddAnimalFragment a = (AddAnimalFragment) getChildFragmentManager().findFragmentByTag(AddAnimalFragment.tag);
+                AddAnimalFragment a = (AddAnimalFragment) getChildFragmentManager().findFragmentByTag(AddAnimalFragment.TAG);
                 if (a == null) {
                     //Make sure camera is active if user returns back from the add animal fragment.
                     goToCaptureImageMode();
@@ -169,11 +174,10 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
     }
 
     private void showCapturedImage() {
-        Handler Handler = new Handler(Looper.getMainLooper());
-        Handler.post(()->{Bitmap bitmap = viewFinder.getBitmap();
-            captureView.setImageBitmap(bitmap);
-            captureView.setVisibility(View.VISIBLE);
-            viewFinder.setVisibility(View.GONE);});
+        Bitmap bitmap = viewFinder.getBitmap();
+        captureView.setImageBitmap(bitmap);
+        captureView.setVisibility(View.VISIBLE);
+        viewFinder.setVisibility(View.GONE);
     }
 
     private void discardCapturedImage() {
