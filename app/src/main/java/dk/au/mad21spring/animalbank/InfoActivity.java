@@ -1,12 +1,11 @@
 package dk.au.mad21spring.animalbank;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class InfoActivity extends AppCompatActivity {
 
@@ -46,8 +45,7 @@ public class InfoActivity extends AppCompatActivity {
 
     //go to list when back button is pressed
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
         super.onBackPressed();
         startActivity(new Intent(InfoActivity.this, ListActivity.class));
         finish();

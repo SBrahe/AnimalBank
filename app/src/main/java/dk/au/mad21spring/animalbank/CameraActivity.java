@@ -1,6 +1,20 @@
 package dk.au.mad21spring.animalbank;
 
+import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.location.Location;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
@@ -12,32 +26,13 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
-
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.location.Location;
-import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -46,13 +41,14 @@ import static dk.au.mad21spring.animalbank.Constants.CAMERA_PERMISSION_REQUEST_C
 import static dk.au.mad21spring.animalbank.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 
 //Inspiration drawn from https://github.com/akhilbattula/android-camerax-java/blob/98593fbd93db214bb5551106f95e4fed348d42d5/app/src/main/java/com/akhil/cameraxjavademo/MainActivity.java#L149
+@RequiresApi(api = Build.VERSION_CODES.N)
 public class CameraActivity extends AppCompatActivity implements AddAnimalFragment.AddAnimalFragmentListener, CaptureImageFragment.CaptureImageFragmentListener {
 
+    private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA", "android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_COARSE_LOCATION"};
+    private final Executor executor = Executors.newSingleThreadExecutor();
     private PreviewView viewFinder;
     private ImageView captureView;
     private ImageCapture imageCapture;
-    private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA", "android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_COARSE_LOCATION"};
-    private final Executor executor = Executors.newSingleThreadExecutor();
     private FusedLocationProviderClient fusedLocationClient;
     private Location locationAtCapture;
 
@@ -140,7 +136,7 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
     /*-------------------------------------- LOCATION ----------------------------------------*/
     /*----------------------------------------------------------------------------------------*/
 
-    public Location getLocationAtCapture(){
+    public Location getLocationAtCapture() {
         return this.locationAtCapture;
     }
 
@@ -157,8 +153,8 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
     /*----------------------------------------------------------------------------------------*/
     /*--------------------------------------- CAMERA -----------------------------------------*/
     /*----------------------------------------------------------------------------------------*/
-    public Bitmap getCapturedImage(){
-        return ((BitmapDrawable)this.captureView.getDrawable()).getBitmap();
+    public Bitmap getCapturedImage() {
+        return ((BitmapDrawable) this.captureView.getDrawable()).getBitmap();
     }
 
     private void showCapturedImage() {
@@ -212,7 +208,7 @@ public class CameraActivity extends AppCompatActivity implements AddAnimalFragme
                     public void onSuccess(Location location) {
                         //TODO: Handle if a null location is received.
                         locationAtCapture = location;
-                        Log.e("locationatcapture",location.toString());
+                        Log.e("locationatcapture", location.toString());
                     }
                 });
                 goToAddAnimalMode();

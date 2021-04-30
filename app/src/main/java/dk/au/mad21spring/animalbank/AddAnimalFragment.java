@@ -3,15 +3,8 @@ package dk.au.mad21spring.animalbank;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,15 +12,13 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
+
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -35,12 +26,8 @@ import com.google.gson.JsonParser;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class AddAnimalFragment extends Fragment {
@@ -49,17 +36,12 @@ public class AddAnimalFragment extends Fragment {
 
     FirebaseFirestore db;
     Repository repo;
-
-    public interface AddAnimalFragmentListener {
-        public void onDiscardPressed();
-    }
-
     private AddAnimalFragmentListener listener;
     private EditText txtEditAnimalName;
 
     @Override
     public void onAttach(@NonNull Context context) {
-        listener = (AddAnimalFragmentListener)context;
+        listener = (AddAnimalFragmentListener) context;
         super.onAttach(context);
     }
 
@@ -90,25 +72,25 @@ public class AddAnimalFragment extends Fragment {
 
         addAnimalToDB();
         Intent intent = new Intent(getActivity(), InfoActivity.class);
-        intent.putExtra("image","test");
+        intent.putExtra("image", "test");
         startActivity(intent);
     }
 
     //code inspired by https://firebase.google.com/docs/storage/android/upload-files
     public void addAnimalToDB() {
-        CameraActivity activity = (CameraActivity)getActivity();
+        CameraActivity activity = (CameraActivity) getActivity();
 
         DocumentReference animalRef = db.collection("animals").document();
 
         Map<String, Object> animalMap = new HashMap<>();
         animalMap.put("name", txtEditAnimalName.getText().toString());
-        animalMap.put("location",activity.getLocationAtCapture());
+        animalMap.put("location", activity.getLocationAtCapture());
         animalRef.set(animalMap);
 
         Bitmap image = activity.getCapturedImage();
         repo.uploadImage(image, imageUri -> {
-            animalRef.update("imageUri",imageUri.toString());
-            Log.d(TAG, "uploadImage: uploaded image and update db, imageuri: "+imageUri);
+            animalRef.update("imageUri", imageUri.toString());
+            Log.d(TAG, "uploadImage: uploaded image and update db, imageuri: " + imageUri);
         });
 
         repo.searchForWikiPage(txtEditAnimalName.getText().toString(), new VolleyCallBack() {
@@ -124,12 +106,12 @@ public class AddAnimalFragment extends Fragment {
                         public void onSuccess(JSONObject ApiResponse) {
                             //code inspired by https://stackoverflow.com/questions/7304002/how-to-parse-a-dynamic-json-key-in-a-nested-json-result
                             try {
-                                JsonObject apiResponseAsJson = (JsonObject) new JsonParser().parse(ApiResponse.getJSONObject("query").getJSONObject("pages").toString());;
-                                Log.d(TAG, "onSuccess: "+ apiResponseAsJson.toString());
+                                JsonObject apiResponseAsJson = (JsonObject) new JsonParser().parse(ApiResponse.getJSONObject("query").getJSONObject("pages").toString());
+                                Log.d(TAG, "onSuccess: " + apiResponseAsJson.toString());
 
                                 JsonObject pages = apiResponseAsJson.getAsJsonObject();
 
-                                for (Map.Entry<String, JsonElement> entry :  pages.entrySet()) {
+                                for (Map.Entry<String, JsonElement> entry : pages.entrySet()) {
                                     JsonObject entryAsJson = entry.getValue().getAsJsonObject();
                                     animalRef.update("wikiNotes", entryAsJson.get("extract").getAsString());
                                     Log.d(TAG, "getWikiNotes: added wiki notes to animal in db!");
@@ -139,6 +121,7 @@ public class AddAnimalFragment extends Fragment {
                                 e.printStackTrace();
                             }
                         }
+
                         @Override
                         public void onError() {
                             Log.d(TAG, "getWikiNotes: could not get wiki notes, even though wiki page was found");
@@ -148,10 +131,15 @@ public class AddAnimalFragment extends Fragment {
                     e.printStackTrace();
                 }
             }
+
             @Override
             public void onError() {
                 Log.d(TAG, "searchForWikiPage: could not find animal wiki page!");
             }
         });
+    }
+
+    public interface AddAnimalFragmentListener {
+        void onDiscardPressed();
     }
 }
