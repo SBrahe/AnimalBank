@@ -75,10 +75,6 @@ public class AddAnimalFragment extends Fragment {
         startActivity(intent);
     }
 
-
-
-
-
     //code inspired by https://firebase.google.com/docs/storage/android/upload-files
     public void addAnimalToDB(DocumentReference animalRef) {
         CameraParentFragment cameraParentFragment = (CameraParentFragment)this.getParentFragment();

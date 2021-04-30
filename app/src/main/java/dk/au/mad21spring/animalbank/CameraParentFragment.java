@@ -89,7 +89,7 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
 
     private void goToAddAnimalMode() {
         this.showCapturedImage();
-        this.getChildFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).addToBackStack(AddAnimalFragment.TAG).commit();
+        this.getChildFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).commit();
     }
 
     private void addReturnFromAddAnimalListener() {
