@@ -1,16 +1,11 @@
 package dk.au.mad21spring.animalbank;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,26 +13,51 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
+@RequiresApi(api = Build.VERSION_CODES.N)
 public class AddAnimalFragment extends Fragment {
 
-    public interface AddAnimalFragmentListener {
-        public void onDiscardPressed();
-    }
-    public final static String tag = "AddAnimalFragment";
+    private static final String TAG = "AddAnimalFragment";
 
+    FirebaseFirestore db;
+    Repository repo;
     private AddAnimalFragmentListener listener;
     private EditText txtEditAnimalName;
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        listener = (AddAnimalFragmentListener) context;
+        super.onAttach(context);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        db = FirebaseFirestore.getInstance();
+        repo = Repository.getAnimalRepository();
+
         View view = inflater.inflate(R.layout.fragment_add_animal, container, false);
         txtEditAnimalName = view.findViewById(R.id.editAnimalNameText);
         txtEditAnimalName.requestFocus();
         //open keyboard
-        //InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 
         //make enter open info view
         txtEditAnimalName.setOnEditorActionListener((v, actionId, event) -> {
@@ -50,12 +70,84 @@ public class AddAnimalFragment extends Fragment {
     }
 
     public void onEnterPressed() {
-        //TODO: Save image to db along with geodata and animal name
-        CameraParentFragment cameraParentFragment = (CameraParentFragment)this.getParentFragment();
-        Location location = cameraParentFragment.getLocationAtCapture();
-        Bitmap image = cameraParentFragment.getCapturedImage();
-        String animalName = this.txtEditAnimalName.getText().toString();
+        DocumentReference animalRef = db.collection("animals").document(); //create new animal document in firestore
+        addAnimalToDB(animalRef);
+
         Intent intent = new Intent(getActivity(), InfoActivity.class);
+        intent.putExtra("animalRef", animalRef.getPath()); //pass image path to info activity
         startActivity(intent);
+    }
+
+    //code inspired by https://firebase.google.com/docs/storage/android/upload-files
+    public void addAnimalToDB(DocumentReference animalRef) {
+        CameraActivity activity = (CameraActivity) getActivity();
+
+        //add name and location to animal in firestore
+        Map<String, Object> animalMap = new HashMap<>();
+        animalMap.put("name", txtEditAnimalName.getText().toString());
+        animalMap.put("location", activity.getLocationAtCapture());
+        animalMap.put("date",  Calendar.getInstance().getTime());
+        animalRef.set(animalMap);
+
+        //get image from activity and upload to firebase storage
+        Bitmap image = activity.getCapturedImage();
+        repo.uploadImage(image, imageUri -> {
+            animalRef.update("imageUri", imageUri.toString());
+            Log.d(TAG, "uploadImage: uploaded image and update db, imageuri: " + imageUri);
+        });
+
+        //search for wikipage and add wikinotes to animal in firestore
+        repo.searchForWikiPage(txtEditAnimalName.getText().toString(), new VolleyCallBack() {
+            @Override
+            public void onSuccess(JSONObject ApiResponse) {
+                try {
+                    //get the title of the wiki page from the wiki search api
+                    String animalname = null;
+                    animalname = ApiResponse.getJSONObject("query").getJSONArray("search").getJSONObject(0).getString("title");
+                    Log.d(TAG, "animalname:");
+                    Log.d(TAG, animalname);
+
+                    //get the first few sentences from wiki getpage api
+                    repo.getWikiNotes(animalname, new VolleyCallBack() {
+                        @Override
+                        public void onSuccess(JSONObject ApiResponse) {
+                            //code inspired by https://stackoverflow.com/questions/7304002/how-to-parse-a-dynamic-json-key-in-a-nested-json-result
+                            try {
+                                JsonObject apiResponseAsJson = (JsonObject) new JsonParser().parse(ApiResponse.getJSONObject("query").getJSONObject("pages").toString());
+                                Log.d(TAG, "onSuccess: " + apiResponseAsJson.toString());
+
+                                JsonObject pages = apiResponseAsJson.getAsJsonObject();
+
+                                //add wikinotes to animal in firestore
+                                for (Map.Entry<String, JsonElement> entry : pages.entrySet()) {
+                                    JsonObject entryAsJson = entry.getValue().getAsJsonObject();
+                                    animalRef.update("wikiNotes", entryAsJson.get("extract").getAsString());
+                                    Log.d(TAG, "getWikiNotes: added wiki notes to animal in db!");
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onError() {
+                            Log.d(TAG, "getWikiNotes: could not get wiki notes, even though wiki page was found");
+                        }
+                    });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError() {
+                Log.d(TAG, "searchForWikiPage: could not find animal wiki page!");
+            }
+        });
+    }
+
+    public interface AddAnimalFragmentListener {
+        void onDiscardPressed();
     }
 }
