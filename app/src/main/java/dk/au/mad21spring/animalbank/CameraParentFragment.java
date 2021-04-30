@@ -88,9 +88,14 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
     }
 
     private void goToAddAnimalMode() {
-        this.showCapturedImage();
-        this.getChildFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).commit();
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(() -> {
+            this.showCapturedImage();
+            this.getChildFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).commitNow();
+        });
     }
+
+
 
     private void addReturnFromAddAnimalListener() {
         this.getChildFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
@@ -169,11 +174,10 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
     }
 
     private void showCapturedImage() {
-        Handler Handler = new Handler(Looper.getMainLooper());
-        Handler.post(()->{Bitmap bitmap = viewFinder.getBitmap();
-            captureView.setImageBitmap(bitmap);
-            captureView.setVisibility(View.VISIBLE);
-            viewFinder.setVisibility(View.GONE);});
+        Bitmap bitmap = viewFinder.getBitmap();
+        captureView.setImageBitmap(bitmap);
+        captureView.setVisibility(View.VISIBLE);
+        viewFinder.setVisibility(View.GONE);
     }
 
     private void discardCapturedImage() {

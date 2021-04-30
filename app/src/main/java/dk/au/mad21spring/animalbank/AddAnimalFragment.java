@@ -31,7 +31,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-@RequiresApi(api = Build.VERSION_CODES.N)
 public class AddAnimalFragment extends Fragment {
 
     public static final String TAG = "AddAnimalFragment";
