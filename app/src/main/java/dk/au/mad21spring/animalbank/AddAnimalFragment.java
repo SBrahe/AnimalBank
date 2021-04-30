@@ -26,6 +26,7 @@ import com.google.gson.JsonParser;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,22 +70,23 @@ public class AddAnimalFragment extends Fragment {
     }
 
     public void onEnterPressed() {
-        addAnimalToDB();
+        DocumentReference animalRef = db.collection("animals").document(); //create new animal document in firestore
+        addAnimalToDB(animalRef);
+
         Intent intent = new Intent(getActivity(), InfoActivity.class);
-        intent.putExtra("image", "test");
+        intent.putExtra("animalRef", animalRef.getPath()); //pass image path to info activity
         startActivity(intent);
     }
 
     //code inspired by https://firebase.google.com/docs/storage/android/upload-files
-    public void addAnimalToDB() {
+    public void addAnimalToDB(DocumentReference animalRef) {
         CameraActivity activity = (CameraActivity) getActivity();
-
-        DocumentReference animalRef = db.collection("animals").document(); //create new animal document in firestore
 
         //add name and location to animal in firestore
         Map<String, Object> animalMap = new HashMap<>();
         animalMap.put("name", txtEditAnimalName.getText().toString());
         animalMap.put("location", activity.getLocationAtCapture());
+        animalMap.put("date",  Calendar.getInstance().getTime());
         animalRef.set(animalMap);
 
         //get image from activity and upload to firebase storage
