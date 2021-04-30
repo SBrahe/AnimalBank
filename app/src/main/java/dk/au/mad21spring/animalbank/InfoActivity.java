@@ -86,7 +86,7 @@ public class InfoActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        startActivity(new Intent(InfoActivity.this, ListActivity.class));
+        startActivity(new Intent(InfoActivity.this, ListFragment.class));
         finish();
     }
 }
