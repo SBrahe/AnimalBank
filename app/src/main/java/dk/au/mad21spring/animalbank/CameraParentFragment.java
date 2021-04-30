@@ -89,14 +89,14 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
 
     private void goToAddAnimalMode() {
         this.showCapturedImage();
-        this.getChildFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).addToBackStack(AddAnimalFragment.tag).commit();
+        this.getChildFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).addToBackStack(AddAnimalFragment.TAG).commit();
     }
 
     private void addReturnFromAddAnimalListener() {
         this.getChildFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
-                AddAnimalFragment a = (AddAnimalFragment) getChildFragmentManager().findFragmentByTag(AddAnimalFragment.tag);
+                AddAnimalFragment a = (AddAnimalFragment) getChildFragmentManager().findFragmentByTag(AddAnimalFragment.TAG);
                 if (a == null) {
                     //Make sure camera is active if user returns back from the add animal fragment.
                     goToCaptureImageMode();

@@ -1,5 +1,6 @@
 package dk.au.mad21spring.animalbank;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.Log;
@@ -32,9 +33,9 @@ public class Repository {
     //private final LiveData<List<Animal>> animals;
     private RequestQueue queue;
 
-    private Repository() {
+    private Repository(Context context) {
         if (queue == null) {
-            queue = Volley.newRequestQueue(AnimalBank.getAppContext());
+            queue = Volley.newRequestQueue(context);
         }
         if (executorService == null) {
             executorService = Executors.newCachedThreadPool();
@@ -42,9 +43,9 @@ public class Repository {
         storage = FirebaseStorage.getInstance();
     }
 
-    public static Repository getAnimalRepository() {
+    public static Repository getAnimalRepository(Context context) {
         if (instance == null) {
-            instance = new Repository();
+            instance = new Repository(context);
         }
         return (instance);
     }
