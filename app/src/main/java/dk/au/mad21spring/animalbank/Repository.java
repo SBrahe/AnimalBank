@@ -49,6 +49,7 @@ public class Repository {
         return (instance);
     }
 
+    //uses the wiki api to search for a wiki page
     public void searchForWikiPage(String query, final VolleyCallBack callBack) {
         String base = "https://en.wikipedia.org/w/api.php?origin=*&action=query&list=search&format=json&srlimit=1&srsearch=";
         String url = base + query;
@@ -65,6 +66,7 @@ public class Repository {
         queue.add(wikiPageRequest);
     }
 
+    //gets the first few sentences from a wiki page
     public void getWikiNotes(String query, final VolleyCallBack callBack) {
         String base = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exlimit=1&explaintext=1&exintro=1&redirects=&exsentences=5&titles=";
         String url = base + query;
@@ -85,6 +87,7 @@ public class Repository {
         queue.add(wikiPageRequest);
     }
 
+    //uploads image to firebase storage and returns uri
     public void uploadImage(Bitmap image, final UploadImageCallback callback
     ) {
         executorService.execute(new Runnable() {

@@ -69,7 +69,6 @@ public class AddAnimalFragment extends Fragment {
     }
 
     public void onEnterPressed() {
-
         addAnimalToDB();
         Intent intent = new Intent(getActivity(), InfoActivity.class);
         intent.putExtra("image", "test");
@@ -80,27 +79,33 @@ public class AddAnimalFragment extends Fragment {
     public void addAnimalToDB() {
         CameraActivity activity = (CameraActivity) getActivity();
 
-        DocumentReference animalRef = db.collection("animals").document();
+        DocumentReference animalRef = db.collection("animals").document(); //create new animal document in firestore
 
+        //add name and location to animal in firestore
         Map<String, Object> animalMap = new HashMap<>();
         animalMap.put("name", txtEditAnimalName.getText().toString());
         animalMap.put("location", activity.getLocationAtCapture());
         animalRef.set(animalMap);
 
+        //get image from activity and upload to firebase storage
         Bitmap image = activity.getCapturedImage();
         repo.uploadImage(image, imageUri -> {
             animalRef.update("imageUri", imageUri.toString());
             Log.d(TAG, "uploadImage: uploaded image and update db, imageuri: " + imageUri);
         });
 
+        //search for wikipage and add wikinotes to animal in firestore
         repo.searchForWikiPage(txtEditAnimalName.getText().toString(), new VolleyCallBack() {
             @Override
             public void onSuccess(JSONObject ApiResponse) {
-                String animalname = null;
                 try {
+                    //get the title of the wiki page from the wiki search api
+                    String animalname = null;
                     animalname = ApiResponse.getJSONObject("query").getJSONArray("search").getJSONObject(0).getString("title");
                     Log.d(TAG, "animalname:");
                     Log.d(TAG, animalname);
+
+                    //get the first few sentences from wiki getpage api
                     repo.getWikiNotes(animalname, new VolleyCallBack() {
                         @Override
                         public void onSuccess(JSONObject ApiResponse) {
@@ -111,6 +116,7 @@ public class AddAnimalFragment extends Fragment {
 
                                 JsonObject pages = apiResponseAsJson.getAsJsonObject();
 
+                                //add wikinotes to animal in firestore
                                 for (Map.Entry<String, JsonElement> entry : pages.entrySet()) {
                                     JsonObject entryAsJson = entry.getValue().getAsJsonObject();
                                     animalRef.update("wikiNotes", entryAsJson.get("extract").getAsString());
