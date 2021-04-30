@@ -10,6 +10,9 @@ public class Animal {
     private Date date;
     private Bitmap image;
 
+    public Animal(){
+        //empty contructor needed with firebase
+    }
     public Animal(String name,String description,Date date,Bitmap image)
     {
         this.name = name;
