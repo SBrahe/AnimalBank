@@ -1,17 +1,28 @@
 package dk.au.mad21spring.animalbank;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
-import java.util.concurrent.Future;
+import java.io.ByteArrayOutputStream;
+import java.util.Calendar;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import kotlin.Result;
 
 //this code was heavily influenced by this android developer tutorial: https://developer.android.com/codelabs/android-training-livedata-viewmodel
 
@@ -20,6 +31,8 @@ public class Repository {
 
     private static final String TAG = "Repository";
     public static Repository instance = null;
+    ExecutorService executorService;
+    FirebaseStorage storage;
     //private final LiveData<List<Animal>> animals;
     private RequestQueue queue;
 
@@ -27,6 +40,10 @@ public class Repository {
         if (queue == null) {
             queue = Volley.newRequestQueue(AnimalBank.getAppContext());
         }
+        if (executorService == null) {
+            executorService = Executors.newCachedThreadPool();
+        }
+        storage = FirebaseStorage.getInstance();
     }
 
     public static Repository getAnimalRepository() {
@@ -52,7 +69,7 @@ public class Repository {
         queue.add(wikiPageRequest);
     }
 
-    public void requestWikiPage(String query, final VolleyCallBack callBack) {
+    public void getWikiNotes(String query, final VolleyCallBack callBack) {
         String base = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exlimit=1&explaintext=1&exintro=1&redirects=&exsentences=5&titles=";
         String url = base + query;
         JsonObjectRequest wikiPageRequest = new JsonObjectRequest
@@ -71,5 +88,33 @@ public class Repository {
                         });
         queue.add(wikiPageRequest);
     }
-}
 
+    public void uploadImage(Bitmap image, final UploadImageCallback callback
+    ) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    image.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+                    byte[] data = baos.toByteArray();
+
+                    StorageReference storageRef = storage.getReference();
+                    StorageReference imageRef = storageRef.child("public/images/" + Calendar.getInstance().getTime());
+
+                    UploadTask uploadTask = imageRef.putBytes(data);
+                    uploadTask.addOnFailureListener(exception -> {
+                        Toast toast = Toast.makeText(AnimalBank.getAppContext(), "Couldn't upload image", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }).addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        Toast toast = Toast.makeText(AnimalBank.getAppContext(), "Image uploaded", Toast.LENGTH_SHORT);
+                        toast.show();
+                        callback.onComplete(uri);
+                    }));
+                } catch (Exception e) {
+                }
+            }
+        });
+    }
+}
