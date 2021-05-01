@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.JsonElement;
@@ -74,7 +75,7 @@ public class AddAnimalFragment extends Fragment {
         animal.name = txtEditAnimalName.getText().toString();
         animal.latitude = cameraParentFragment.getLocationAtCapture().getLatitude();
         animal.longitude = cameraParentFragment.getLocationAtCapture().getLongitude();
-        animal.date = Calendar.getInstance().getTime();
+        animal.date = Timestamp.now();
         animal.image = cameraParentFragment.getCapturedImage();
         repo.insertAnimal(animal,(documentReference)->{
             Intent intent = new Intent(getActivity(), InfoActivity.class);
