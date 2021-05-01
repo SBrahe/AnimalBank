@@ -1,9 +1,7 @@
 package dk.au.mad21spring.animalbank;
 
-import android.graphics.Bitmap;
-import android.location.Location;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import android.location.Location;
 
 import java.util.Date;
 import java.util.Map;

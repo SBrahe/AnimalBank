@@ -19,15 +19,15 @@ import java.util.Calendar;
 public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder>{
 
 
-    private ArrayList<Animal> animals;
+    private ArrayList<AnimalFireStoreModel> animals;
     private IAnimalListActionListener listener;
 
-    public AnimalAdapter(ArrayList<Animal> animalList,IAnimalListActionListener listener){
+    public AnimalAdapter(ArrayList<AnimalFireStoreModel> animalList,IAnimalListActionListener listener){
             animals=animalList;
             this.listener=listener;
     }
 
-    public void UpdateList(ArrayList<Animal> updateAnimals){
+    public void UpdateList(ArrayList<AnimalFireStoreModel> updateAnimals){
         animals=updateAnimals;
     }
 
@@ -72,7 +72,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
         public void onClick(View view) {
             int position = getBindingAdapterPosition();
             if(position!= RecyclerView.NO_POSITION){
-                Animal animalClicked = animals.get(position);
+                AnimalFireStoreModel animalClicked = animals.get(position);
                 listener.onAnimalPressed(animalClicked);
             }
         }

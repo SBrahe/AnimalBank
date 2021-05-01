@@ -29,7 +29,7 @@ public class ListFragment extends Fragment implements IAnimalListActionListener{
     private RecyclerView recyclerView;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private RecyclerView.LayoutManager layoutManager;
-    private ArrayList<Animal> animals;
+    private ArrayList<AnimalFireStoreModel> animals;
     private AnimalAdapter adapter;
     private View view;
     public ListFragment() {
@@ -42,12 +42,9 @@ public class ListFragment extends Fragment implements IAnimalListActionListener{
         // Inflate the layout for this fragment
 
         view = inflater.inflate(R.layout.fragment_list, container, false);
-        animals=new ArrayList<Animal>();
         this.recyclerView = view.findViewById(R.id.recycler_view);
         this.layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         this.recyclerView.setLayoutManager(layoutManager);
-        this.adapter = new AnimalAdapter(animals,ListFragment.this);
-        this.recyclerView.setAdapter(adapter);
         this.setupFirebaseListener();
         return view;
     }
@@ -59,7 +56,7 @@ public class ListFragment extends Fragment implements IAnimalListActionListener{
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                         for(DocumentSnapshot documentSnapshot:list){
-                            Animal animal = documentSnapshot.toObject(Animal.class);
+                            AnimalFireStoreModel animal = documentSnapshot.toObject(AnimalFireStoreModel.class);
                             animals.add(animal);
                         }
                         if(animals.size() > 0){
@@ -81,7 +78,7 @@ public class ListFragment extends Fragment implements IAnimalListActionListener{
     }
 
     @Override
-    public void onAnimalPressed(Animal animal) {
+    public void onAnimalPressed(AnimalFireStoreModel animal) {
 
     }
 }
