@@ -18,12 +18,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsFragment extends Fragment {
 
+    private Repository repo;
+
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         @Override
         public void onMapReady(GoogleMap googleMap) {
             LatLng sydney = new LatLng(-34, 151);
-            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+            repo.getAllAnimals((animalFireStoreModel)->{
+                addAnimalToMap(animalFireStoreModel,googleMap);
+            });
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         }
     };
@@ -33,6 +37,7 @@ public class MapsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        repo = Repository.getAnimalRepository(getActivity().getApplicationContext());
         return inflater.inflate(R.layout.fragment_maps, container, false);
     }
 
@@ -44,5 +49,10 @@ public class MapsFragment extends Fragment {
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+    }
+
+    private void addAnimalToMap(AnimalFireStoreModel animal, GoogleMap googleMap){
+        LatLng sydney = new LatLng(animal.getLatitude(), animal.getLongitude());
+        googleMap.addMarker(new MarkerOptions().position(sydney).title(animal.getName()));
     }
 }

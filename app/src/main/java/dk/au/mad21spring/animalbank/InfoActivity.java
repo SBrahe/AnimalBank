@@ -63,7 +63,7 @@ public class InfoActivity extends AppCompatActivity {
         DocumentReference animalRef = db.document(getIntent().getStringExtra("animalRef"));
 
         //download info from firestore
-        animalRef.addSnapshotListener((snapshot, e) -> {
+        animalRef.addSnapshotListener(this,(snapshot, e) -> {
             if (e != null) {
                 Log.w(TAG, "Listen failed.", e);
                 return;
