@@ -72,7 +72,8 @@ public class AddAnimalFragment extends Fragment {
         CameraParentFragment cameraParentFragment = (CameraParentFragment)this.getParentFragment();
         Animal animal = new Animal();
         animal.name = txtEditAnimalName.getText().toString();
-        animal.location = cameraParentFragment.getLocationAtCapture();
+        animal.latitude = cameraParentFragment.getLocationAtCapture().getLatitude();
+        animal.longitude = cameraParentFragment.getLocationAtCapture().getLongitude();
         animal.date = Calendar.getInstance().getTime();
         animal.image = cameraParentFragment.getCapturedImage();
         repo.insertAnimal(animal,(documentReference)->{

@@ -10,5 +10,6 @@ public class Animal {
     public String description;
     public Date date;
     public Bitmap image;
-    public Location location;
+    public double latitude;
+    public double longitude;
 }

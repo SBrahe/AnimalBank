@@ -13,6 +13,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -79,9 +80,20 @@ public class Repository {
         });
         this.trySetWikiInfo(animal.name, animalRef, (e) -> {
         });
+        //Refactor to Tasks.whenAllComplete()
     }
 
-    public void getAnimal(String name, BiConsumer<DocumentSnapshot, Animal> onSuccess, Consumer<Error> onError) {
+    public void getAllAnimals(Consumer<AnimalFireStoreModel> doForEach){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(ANIMAL_COLLECTION_NAME).get().onSuccessTask((snapshot)->{
+            snapshot.iterator().forEachRemaining((item)->{
+                doForEach.accept(new AnimalFireStoreModel(item.getData()));
+            });
+            return null;
+        });
+    }
+
+    public void getAnimal(String ID, BiConsumer<DocumentSnapshot, Animal> onSuccess, Consumer<Error> onError) {
     }
 
     public void updateAnimal(Animal animal, BiConsumer<DocumentSnapshot, Animal> onSuccess, Consumer<Error> onError) {
@@ -90,6 +102,8 @@ public class Repository {
 
     public void deleteAnimal(Animal animal, Consumer<Animal> onSuccess, Consumer<Error> onError) {
     }
+
+
 
 
     private void trySetWikiInfo(String AnimalName, DocumentReference documentReference, Consumer<VolleyError> outerOnError) {
@@ -146,7 +160,7 @@ public class Repository {
     }
 
     //uses the wiki api to search for a wiki page
-    public void searchForWikiPage(String query, final VolleyCallBack callBack) {
+    private void searchForWikiPage(String query, final VolleyCallBack callBack) {
         String base = "https://en.wikipedia.org/w/api.php?origin=*&action=query&list=search&format=json&srlimit=1&srsearch=";
         String url = base + query;
 
@@ -163,7 +177,7 @@ public class Repository {
     }
 
     //gets the first few sentences from a wiki page
-    public void getWikiNotes(String query, final VolleyCallBack callBack) {
+    private void getWikiNotes(String query, final VolleyCallBack callBack) {
         String base = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exlimit=1&explaintext=1&exintro=1&redirects=&exsentences=5&titles=";
         String url = base + query;
         JsonObjectRequest wikiPageRequest = new JsonObjectRequest
@@ -184,7 +198,7 @@ public class Repository {
     }
 
     //uploads image to firebase storage and returns uri
-    public void uploadImage(Bitmap image, final UploadImageCallback callback
+    private void uploadImage(Bitmap image, final UploadImageCallback callback
     ) {
         executorService.execute(new Runnable() {
             @Override
