@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,10 +26,14 @@ public class MapsFragment extends Fragment {
         @Override
         public void onMapReady(GoogleMap googleMap) {
             LatLng sydney = new LatLng(-34, 151);
-            repo.getAllAnimals((animalFireStoreModel)->{
-                addAnimalToMap(animalFireStoreModel,googleMap);
+            repo.getAllAnimals((animalFireStoreModel) -> {
+                addAnimalToMap(animalFireStoreModel, googleMap);
             });
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            googleMap.setOnInfoWindowClickListener((marker) -> {
+                marker.getId();
+                Toast.makeText(getActivity(), "Info window clicked",
+                        Toast.LENGTH_SHORT).show();
+            });
         }
     };
 
@@ -51,7 +56,7 @@ public class MapsFragment extends Fragment {
         }
     }
 
-    private void addAnimalToMap(AnimalFireStoreModel animal, GoogleMap googleMap){
+    private void addAnimalToMap(AnimalFireStoreModel animal, GoogleMap googleMap) {
         LatLng sydney = new LatLng(animal.getLatitude(), animal.getLongitude());
         googleMap.addMarker(new MarkerOptions().position(sydney).title(animal.getName()));
     }
