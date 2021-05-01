@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.location.Location;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.firebase.Timestamp;
 
 import java.util.Date;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Map;
 public class AnimalFireStoreModel {
     private String name;
     private String description;
-    private Date date;
+    private Timestamp date;
     private String imageURI;
     private double latitude;
     private double longitude;
@@ -32,13 +33,13 @@ public class AnimalFireStoreModel {
     public AnimalFireStoreModel(Map animalMap) {
         this.name = animalMap.get("name") != null ? (String) animalMap.get("name") : null;
         this.description = animalMap.get("description") != null ? (String) animalMap.get("description") : null;
-        //this.date = animalMap.get("date") != null ? (Date) animalMap.get("date") : null;
+        this.date = (Timestamp) animalMap.get("date");
         this.latitude = (double) animalMap.get("latitude");
         this.longitude = (double) animalMap.get("longitude");
-        //this.imageURI = animalMap.get("imageURI") != null ? (String) animalMap.get("imageURI") : null;
+        this.imageURI = animalMap.get("imageURI") != null ? (String) animalMap.get("imageURI") : null;
     }
 
-    public AnimalFireStoreModel(String name, String description, Date date, Location location, String imageURI) {
+    public AnimalFireStoreModel(String name, String description, Timestamp date, Location location, String imageURI) {
         this.name = name;
         this.description = description;
         this.date = date;
@@ -61,11 +62,11 @@ public class AnimalFireStoreModel {
         this.description = description;
     }
 
-    public Date getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(Timestamp date) {
         this.date = date;
     }
 
