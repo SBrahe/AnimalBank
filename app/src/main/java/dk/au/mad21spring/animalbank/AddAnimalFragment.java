@@ -33,6 +33,8 @@ import java.util.Map;
 
 import javax.security.auth.callback.Callback;
 
+import static dk.au.mad21spring.animalbank.Constants.ANIMAL_REF_INTENT_EXTRA;
+
 public class AddAnimalFragment extends Fragment {
 
     public static final String TAG = "AddAnimalFragment";
@@ -47,7 +49,6 @@ public class AddAnimalFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        db = FirebaseFirestore.getInstance();
         repo = Repository.getAnimalRepository(getActivity().getApplicationContext());
 
         View view = inflater.inflate(R.layout.fragment_add_animal, container, false);
@@ -68,80 +69,17 @@ public class AddAnimalFragment extends Fragment {
     }
 
     public void onEnterPressed() {
-        DocumentReference animalRef = db.collection("animals").document(); //create new animal document in firestore
-        addAnimalToDB(animalRef);
-
-        Intent intent = new Intent(getActivity(), InfoActivity.class);
-        intent.putExtra("animalRef", animalRef.getPath()); //pass image path to info activity
-        startActivity(intent);
-    }
-
-    //code inspired by https://firebase.google.com/docs/storage/android/upload-files
-    public void addAnimalToDB(DocumentReference animalRef) {
         CameraParentFragment cameraParentFragment = (CameraParentFragment)this.getParentFragment();
-        //add name and location to animal in firestore
-        Map<String, Object> animalMap = new HashMap<>();
-        animalMap.put("name", txtEditAnimalName.getText().toString());
-        animalMap.put("location", cameraParentFragment.getLocationAtCapture());
-        animalMap.put("date",  Calendar.getInstance().getTime());
-        animalRef.set(animalMap);
-
-        //get image from activity and upload to firebase storage
-        Bitmap image = cameraParentFragment.getCapturedImage();
-        repo.uploadImage(image, imageUri -> {
-            animalRef.update("imageUri", imageUri.toString());
-            Log.d(TAG, "uploadImage: uploaded image and update db, imageuri: " + imageUri);
-        });
-
-        //search for wikipage and add wikinotes to animal in firestore
-        repo.searchForWikiPage(txtEditAnimalName.getText().toString(), new VolleyCallBack() {
-            @Override
-            public void onSuccess(JSONObject ApiResponse) {
-                try {
-                    //get the title of the wiki page from the wiki search api
-                    String animalname = null;
-                    animalname = ApiResponse.getJSONObject("query").getJSONArray("search").getJSONObject(0).getString("title");
-                    Log.d(TAG, "animalname:");
-                    Log.d(TAG, animalname);
-
-                    //get the first few sentences from wiki getpage api
-                    repo.getWikiNotes(animalname, new VolleyCallBack() {
-                        @Override
-                        public void onSuccess(JSONObject ApiResponse) {
-                            //code inspired by https://stackoverflow.com/questions/7304002/how-to-parse-a-dynamic-json-key-in-a-nested-json-result
-                            try {
-                                JsonObject apiResponseAsJson = (JsonObject) new JsonParser().parse(ApiResponse.getJSONObject("query").getJSONObject("pages").toString());
-                                Log.d(TAG, "onSuccess: " + apiResponseAsJson.toString());
-
-                                JsonObject pages = apiResponseAsJson.getAsJsonObject();
-
-                                //add wikinotes to animal in firestore
-                                for (Map.Entry<String, JsonElement> entry : pages.entrySet()) {
-                                    JsonObject entryAsJson = entry.getValue().getAsJsonObject();
-                                    animalRef.update("wikiNotes", entryAsJson.get("extract").getAsString());
-                                    Log.d(TAG, "getWikiNotes: added wiki notes to animal in db!");
-                                }
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onError() {
-                            Log.d(TAG, "getWikiNotes: could not get wiki notes, even though wiki page was found");
-                        }
-                    });
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onError() {
-                Log.d(TAG, "searchForWikiPage: could not find animal wiki page!");
-            }
-        });
+        Animal animal = new Animal();
+        animal.name = txtEditAnimalName.getText().toString();
+        animal.location = cameraParentFragment.getLocationAtCapture();
+        animal.date = Calendar.getInstance().getTime();
+        animal.image = cameraParentFragment.getCapturedImage();
+        repo.insertAnimal(animal,(documentReference)->{
+            Intent intent = new Intent(getActivity(), InfoActivity.class);
+            intent.putExtra(ANIMAL_REF_INTENT_EXTRA, documentReference.getPath()); //pass image path to info activity
+            startActivity(intent);
+        },(error)->{});
     }
 
     public interface AddAnimalFragmentListener {

@@ -1,55 +1,14 @@
 package dk.au.mad21spring.animalbank;
 
 import android.graphics.Bitmap;
+import android.location.Location;
 
 import java.util.Date;
 
 public class Animal {
-    private String name;
-    private String description;
-    private Date date;
-    private Bitmap image;
-
-    public Animal(){
-        //empty contructor needed with firebase
-    }
-    public Animal(String name,String description,Date date,Bitmap image)
-    {
-        this.name = name;
-        this.description = description;
-        this.date = date;
-        this.image = image;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public Bitmap getImage() {
-        return image;
-    }
-
-    public void setImage(Bitmap image) {
-        this.image = image;
-    }
+    public String name;
+    public String description;
+    public Date date;
+    public Bitmap image;
+    public Location location;
 }

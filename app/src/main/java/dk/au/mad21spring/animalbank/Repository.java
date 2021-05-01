@@ -10,16 +10,31 @@ import androidx.annotation.RequiresApi;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
+import static dk.au.mad21spring.animalbank.Constants.ANIMAL_COLLECTION_NAME;
 
 //this code was heavily influenced by this android developer tutorial: https://developer.android.com/codelabs/android-training-livedata-viewmodel
 
@@ -32,6 +47,7 @@ public class Repository {
     FirebaseStorage storage;
     //private final LiveData<List<Animal>> animals;
     private RequestQueue queue;
+    private Context context;
 
     private Repository(Context context) {
         if (queue == null) {
@@ -41,6 +57,7 @@ public class Repository {
             executorService = Executors.newCachedThreadPool();
         }
         storage = FirebaseStorage.getInstance();
+        this.context = context;
     }
 
     public static Repository getAnimalRepository(Context context) {
@@ -50,21 +67,83 @@ public class Repository {
         return (instance);
     }
 
-    public void tryInsertAnimal(Animal animal) {
+    //code inspired by https://firebase.google.com/docs/storage/android/upload-files
+    public void insertAnimal(Animal animal, Consumer<DocumentReference> onSuccess, Consumer<Error> onError) {
+        AnimalFireStoreModel toUpload = new AnimalFireStoreModel(animal);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference animalRef = db.collection(ANIMAL_COLLECTION_NAME).document(); //create new animal document in firestore
+        animalRef.set(toUpload);
+        this.uploadImage(animal.image, imageUri -> {
+            animalRef.update("imageUri", imageUri.toString());
+            Log.d(TAG, "uploadImage: uploaded image and update db, imageuri: " + imageUri);
+        });
+        this.trySetWikiInfo(animal.name, animalRef, (e) -> {
+        });
+    }
+
+    public void getAnimal(String name, BiConsumer<DocumentSnapshot, Animal> onSuccess, Consumer<Error> onError) {
+    }
+
+    public void updateAnimal(Animal animal, BiConsumer<DocumentSnapshot, Animal> onSuccess, Consumer<Error> onError) {
 
     }
 
-    public Animal getAnimal(String name) {
-        return new Animal();
+    public void deleteAnimal(Animal animal, Consumer<Animal> onSuccess, Consumer<Error> onError) {
     }
 
-    public void updateAnimal(Animal animal){
+
+    private void trySetWikiInfo(String AnimalName, DocumentReference documentReference, Consumer<VolleyError> outerOnError) {
+        this.searchForWikiPage(AnimalName, new VolleyCallBack() {
+            @Override
+            public void onSuccess(JSONObject ApiResponse) {
+                try {
+                    //get the title of the wiki page from the wiki search api
+                    String animalname = null;
+                    animalname = ApiResponse.getJSONObject("query").getJSONArray("search").getJSONObject(0).getString("title");
+                    Log.d(TAG, "animalname:");
+                    Log.d(TAG, animalname);
+
+                    //get the first few sentences from wiki getpage api
+                    getWikiNotes(animalname, new VolleyCallBack() {
+                        @Override
+                        public void onSuccess(JSONObject ApiResponse) {
+                            //code inspired by https://stackoverflow.com/questions/7304002/how-to-parse-a-dynamic-json-key-in-a-nested-json-result
+                            try {
+                                JsonObject apiResponseAsJson = (JsonObject) new JsonParser().parse(ApiResponse.getJSONObject("query").getJSONObject("pages").toString());
+                                Log.d(TAG, "onSuccess: " + apiResponseAsJson.toString());
+
+                                JsonObject pages = apiResponseAsJson.getAsJsonObject();
+
+                                //add wikinotes to animal in firestore
+                                for (Map.Entry<String, JsonElement> entry : pages.entrySet()) {
+                                    JsonObject entryAsJson = entry.getValue().getAsJsonObject();
+                                    documentReference.update("wikiNotes", entryAsJson.get("extract").getAsString());
+                                    Log.d(TAG, "getWikiNotes: added wiki notes to animal in db!");
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onError(VolleyError error) {
+                            Log.d(TAG, "getWikiNotes: could not get wiki notes, even though wiki page was found");
+                        }
+                    });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                Log.d(TAG, "searchForWikiPage: could not find animal wiki page!");
+                outerOnError.accept(error);
+            }
+        });
 
     }
-
-    public void deleteAnimal() {
-    }
-
 
     //uses the wiki api to search for a wiki page
     public void searchForWikiPage(String query, final VolleyCallBack callBack) {
@@ -79,7 +158,7 @@ public class Repository {
                             Log.d(TAG, "searchForWikiPage: " + response);
                             callBack.onSuccess(response);
                         },
-                        error -> callBack.onError());
+                        error -> callBack.onError(error));
         queue.add(wikiPageRequest);
     }
 
@@ -99,7 +178,7 @@ public class Repository {
                         {
                             Log.d(TAG, "requestWikiPage: error");
                             Log.d(TAG, error.toString());
-                            callBack.onError();
+                            callBack.onError(error);
                         });
         queue.add(wikiPageRequest);
     }
@@ -121,10 +200,10 @@ public class Repository {
 
                     UploadTask uploadTask = imageRef.putBytes(data);
                     uploadTask.addOnFailureListener(exception -> {
-                        Toast toast = Toast.makeText(AnimalBank.getAppContext(), "Couldn't upload image", Toast.LENGTH_SHORT);
+                        Toast toast = Toast.makeText(context, "Couldn't upload image", Toast.LENGTH_SHORT);
                         toast.show();
                     }).addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        Toast toast = Toast.makeText(AnimalBank.getAppContext(), "Image uploaded", Toast.LENGTH_SHORT);
+                        Toast toast = Toast.makeText(context, "Image uploaded", Toast.LENGTH_SHORT);
                         toast.show();
                         callback.onComplete(uri);
                     }));
