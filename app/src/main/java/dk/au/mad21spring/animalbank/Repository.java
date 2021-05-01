@@ -50,6 +50,22 @@ public class Repository {
         return (instance);
     }
 
+    public void tryInsertAnimal(Animal animal) {
+
+    }
+
+    public Animal getAnimal(String name) {
+        return new Animal();
+    }
+
+    public void updateAnimal(Animal animal){
+
+    }
+
+    public void deleteAnimal() {
+    }
+
+
     //uses the wiki api to search for a wiki page
     public void searchForWikiPage(String query, final VolleyCallBack callBack) {
         String base = "https://en.wikipedia.org/w/api.php?origin=*&action=query&list=search&format=json&srlimit=1&srsearch=";
