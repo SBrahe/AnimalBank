@@ -2,18 +2,19 @@ package dk.au.mad21spring.animalbank;
 
 import android.graphics.Bitmap;
 
-import java.util.Date;
+import com.google.firebase.Timestamp;
+import com.google.type.Date;
 
 public class Animal {
     private String name;
     private String description;
-    private Date date;
+    private Timestamp date;
     private Bitmap image;
 
     public Animal(){
         //empty contructor needed with firebase
     }
-    public Animal(String name,String description,Date date,Bitmap image)
+    public Animal(String name,String description,Timestamp date,Bitmap image)
     {
         this.name = name;
         this.description = description;
@@ -37,11 +38,11 @@ public class Animal {
         this.description = description;
     }
 
-    public Date getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(Timestamp date) {
         this.date = date;
     }
 
