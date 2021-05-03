@@ -5,11 +5,14 @@ import android.location.Location;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.Exclude;
 
 import java.util.Date;
 import java.util.Map;
 
 public class AnimalFireStoreModel {
+    @Exclude
+    public String id;
     private String name;
     private String description;
     private Timestamp date;
@@ -28,22 +31,6 @@ public class AnimalFireStoreModel {
         this.date = animal.date;
         this.latitude = animal.latitude;
         this.longitude = animal.longitude;
-    }
-
-    public AnimalFireStoreModel(Map animalMap) {
-        this.name = animalMap.get("name") != null ? (String) animalMap.get("name") : null;
-        this.description = animalMap.get("description") != null ? (String) animalMap.get("description") : null;
-        this.date = (Timestamp) animalMap.get("date");
-        this.latitude = (double) animalMap.get("latitude");
-        this.longitude = (double) animalMap.get("longitude");
-        this.imageURI = animalMap.get("imageURI") != null ? (String) animalMap.get("imageURI") : null;
-    }
-
-    public AnimalFireStoreModel(String name, String description, Timestamp date, Location location, String imageURI) {
-        this.name = name;
-        this.description = description;
-        this.date = date;
-        this.imageURI = imageURI;
     }
 
     public String getName() {

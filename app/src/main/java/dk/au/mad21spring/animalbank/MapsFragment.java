@@ -26,6 +26,7 @@ public class MapsFragment extends Fragment {
         @Override
         public void onMapReady(GoogleMap googleMap) {
             LatLng sydney = new LatLng(-34, 151);
+            //Populate map:
             repo.getAllAnimals((animalFireStoreModel) -> {
                 addAnimalToMap(animalFireStoreModel, googleMap);
             });

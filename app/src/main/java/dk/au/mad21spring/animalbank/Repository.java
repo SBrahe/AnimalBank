@@ -87,7 +87,9 @@ public class Repository {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(ANIMAL_COLLECTION_NAME).get().onSuccessTask((snapshot)->{
             snapshot.iterator().forEachRemaining((item)->{
-                doForEach.accept(new AnimalFireStoreModel(item.getData()));
+                AnimalFireStoreModel animal = item.toObject(AnimalFireStoreModel.class);
+                animal.id = item.getId();
+                doForEach.accept(animal);
             });
             return null;
         });
