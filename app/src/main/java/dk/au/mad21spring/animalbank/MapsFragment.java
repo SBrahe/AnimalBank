@@ -43,6 +43,7 @@ public class MapsFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), InfoActivity.class);
                 intent.putExtra(ANIMAL_REF_INTENT_EXTRA, docRef.getPath()); //pass animal path to info activity
                 startActivity(intent);
+
             });
         }
     };

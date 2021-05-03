@@ -73,11 +73,14 @@ public class InfoActivity extends AppCompatActivity {
         });
     }
 
+    // onBackPressed should not be overridden since the info view can be accessed both from the map and the list view.
+    // The default back activity can handle this.
+
     //go to list when back button is pressed
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        startActivity(new Intent(InfoActivity.this, ListFragment.class));
-        finish();
-    }
+    //@Override
+    //public void onBackPressed() {
+    //    super.onBackPressed();
+    //    startActivity(new Intent(InfoActivity.this, ListFragment.class));
+    //    finish();
+    //}
 }
