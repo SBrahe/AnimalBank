@@ -39,6 +39,8 @@ import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.DESCRIPTION_FIELD;
+import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.IMAGE_URI_FIELD;
 import static dk.au.mad21spring.animalbank.Constants.ANIMAL_COLLECTION_NAME;
 
 //this code was heavily influenced by this android developer tutorial: https://developer.android.com/codelabs/android-training-livedata-viewmodel
@@ -79,7 +81,7 @@ public class Repository {
         DocumentReference animalRef = db.collection(ANIMAL_COLLECTION_NAME).document(); //create new animal document in firestore
         animalRef.set(toUpload);
         this.uploadImage(animal.image, imageUri -> {
-            animalRef.update("imageUri", imageUri.toString());
+            animalRef.update(IMAGE_URI_FIELD, imageUri.toString());
             Log.d(TAG, "uploadImage: uploaded image and update db, imageuri: " + imageUri);
         });
         this.trySetWikiInfo(animal.name, animalRef, (e) -> {
@@ -106,7 +108,8 @@ public class Repository {
 
     }
 
-    public void deleteAnimal(Animal animal, Consumer<Animal> onSuccess, Consumer<Error> onError) {
+    public void deleteAnimal(Animal animal, Consumer<AnimalFireStoreModel> onSuccess, Consumer<Error> onError) {
+
     }
 
 
@@ -137,7 +140,7 @@ public class Repository {
                                 //add wikinotes to animal in firestore
                                 for (Map.Entry<String, JsonElement> entry : pages.entrySet()) {
                                     JsonObject entryAsJson = entry.getValue().getAsJsonObject();
-                                    documentReference.update("description", entryAsJson.get("extract").getAsString());
+                                    documentReference.update(DESCRIPTION_FIELD, entryAsJson.get("extract").getAsString());
                                     Log.d(TAG, "getWikiNotes: added wiki notes to animal in db!");
                                 }
 

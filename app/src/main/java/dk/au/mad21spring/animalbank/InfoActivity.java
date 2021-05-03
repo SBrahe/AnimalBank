@@ -5,18 +5,21 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import dk.au.mad21spring.animalbank.Constants;
 
 public class InfoActivity extends AppCompatActivity {
 
@@ -31,6 +34,7 @@ public class InfoActivity extends AppCompatActivity {
     private TextView txtSpottedNear;
     private TextView txtUserNotes;
     private TextView txtWikiNotes;
+    private ImageView userImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +51,15 @@ public class InfoActivity extends AppCompatActivity {
         txtSpottedNear = findViewById(R.id.spottedLocationText);
         txtUserNotes = findViewById(R.id.userNotesText);
         txtWikiNotes = findViewById(R.id.wikiNotesText);
+        userImageView = findViewById(R.id.userImageView);
 
-        //initialize back button
+
+        Repository repo = Repository.getAnimalRepository(getApplicationContext());
         btnBack.setOnClickListener(v -> onBackPressed());
+        //btnDelete.setOnClickListener(v->repo.deleteAnimal());
 
         //get doc ref from intent extras.
-        DocumentReference animalRef = db.document(getIntent().getStringExtra("animalRef"));
+        DocumentReference animalRef = db.document(getIntent().getStringExtra(Constants.ANIMAL_REF_INTENT_EXTRA));
         //Attach listener that updates on changes.
         animalRef.addSnapshotListener(this, (snapshot, e) -> {
             if (e != null) {
@@ -71,6 +78,8 @@ public class InfoActivity extends AppCompatActivity {
                     txtSpottedNear.setText(animal.getLatitude() + ", " + animal.getLongitude());
                 }
                 txtWikiNotes.setText(animal.getDescription());
+                Glide.with(userImageView.getContext()).load(animal.getImageURI()).into(userImageView);
+
             } else {
                 Log.d(TAG, "Current data: null");
             }
@@ -87,4 +96,6 @@ public class InfoActivity extends AppCompatActivity {
     //    startActivity(new Intent(InfoActivity.this, ListFragment.class));
     //    finish();
     //}
+
+
 }
