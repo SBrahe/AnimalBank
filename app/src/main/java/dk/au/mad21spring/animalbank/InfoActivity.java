@@ -54,7 +54,7 @@ public class InfoActivity extends AppCompatActivity {
         //get doc ref from intent extras.
         DocumentReference animalRef = db.document(getIntent().getStringExtra("animalRef"));
         //Attach listener that updates on changes.
-        animalRef.addSnapshotListener(this,(snapshot, e) -> {
+        animalRef.addSnapshotListener(this, (snapshot, e) -> {
             if (e != null) {
                 Log.w(TAG, "Listen failed.", e);
                 return;
@@ -64,7 +64,12 @@ public class InfoActivity extends AppCompatActivity {
                 AnimalFireStoreModel animal = snapshot.toObject(AnimalFireStoreModel.class);
                 txtAnimalName.setText(animal.getName());
                 txtSpottedDate.setText(animal.getDate().toDate().toString());
-                txtSpottedNear.setText(animal.getLatitude()+ ", " + animal.getLongitude());
+                String near = Repository.getAnimalRepository(getApplicationContext()).getLocalityFromLatLong(animal.getLatitude(), animal.getLongitude());
+                if (near != null) {
+                    txtSpottedNear.setText(near);
+                } else {
+                    txtSpottedNear.setText(animal.getLatitude() + ", " + animal.getLongitude());
+                }
                 txtWikiNotes.setText(animal.getDescription());
             } else {
                 Log.d(TAG, "Current data: null");
@@ -73,7 +78,7 @@ public class InfoActivity extends AppCompatActivity {
     }
 
     // onBackPressed should not be overridden since the info view can be accessed both from the map and the list view.
-    // The default back activity can handle this.
+    // The default back functionality can handle this.
 
     //go to list when back button is pressed
     //@Override
