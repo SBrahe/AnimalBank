@@ -133,7 +133,7 @@ public class Repository {
                                 //add wikinotes to animal in firestore
                                 for (Map.Entry<String, JsonElement> entry : pages.entrySet()) {
                                     JsonObject entryAsJson = entry.getValue().getAsJsonObject();
-                                    documentReference.update("wikiNotes", entryAsJson.get("extract").getAsString());
+                                    documentReference.update("description", entryAsJson.get("extract").getAsString());
                                     Log.d(TAG, "getWikiNotes: added wiki notes to animal in db!");
                                 }
 

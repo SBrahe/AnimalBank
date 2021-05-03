@@ -61,12 +61,11 @@ public class InfoActivity extends AppCompatActivity {
             }
 
             if (snapshot != null && snapshot.exists()) {
-                String wikinotes = (String)snapshot.get("wikiNotes");
-                Log.d(TAG, "Current data: "+ wikinotes);
-                txtAnimalName.setText(snapshot.get("name").toString());
-                txtSpottedDate.setText(snapshot.get("date").toString());
-                txtSpottedNear.setText(snapshot.get("latitude").toString() + snapshot.get("longitude").toString());
-                txtWikiNotes.setText((String)snapshot.get("wikiNotes"));
+                AnimalFireStoreModel animal = snapshot.toObject(AnimalFireStoreModel.class);
+                txtAnimalName.setText(animal.getName());
+                txtSpottedDate.setText(animal.getDate().toString());
+                txtSpottedNear.setText(animal.getLatitude()+ ", " + animal.getLongitude());
+                txtWikiNotes.setText(animal.getDescription());
             } else {
                 Log.d(TAG, "Current data: null");
             }

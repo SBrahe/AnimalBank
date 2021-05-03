@@ -62,6 +62,9 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
         this.captureView = view.findViewById(R.id.captureView);
         this.viewFinder = view.findViewById(R.id.viewFinder);
 
+        //Make sure the UI starts out in the correct state:
+        this.goToCaptureImageMode();
+
         //Init camera
         if (hasPermissions()) {
             this.startCamera();
@@ -70,8 +73,6 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
         }
         //For retrieving location data:
         this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-        //Make sure the UI starts out in the correct state:
-        this.goToCaptureImageMode();
         //Init back stack handling.
         this.addReturnFromAddAnimalListener();
         return view;
@@ -138,9 +139,6 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             if (hasPermissions()) {
                 this.startCamera();
-            } else {
-                Toast.makeText(getActivity(), "Permissions are necessary.", Toast.LENGTH_SHORT).show();
-                //TODO: Needs to handle case when user did not give permissions.
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
