@@ -63,7 +63,7 @@ public class InfoActivity extends AppCompatActivity {
             if (snapshot != null && snapshot.exists()) {
                 AnimalFireStoreModel animal = snapshot.toObject(AnimalFireStoreModel.class);
                 txtAnimalName.setText(animal.getName());
-                txtSpottedDate.setText(animal.getDate().toString());
+                txtSpottedDate.setText(animal.getDate().toDate().toString());
                 txtSpottedNear.setText(animal.getLatitude()+ ", " + animal.getLongitude());
                 txtWikiNotes.setText(animal.getDescription());
             } else {
