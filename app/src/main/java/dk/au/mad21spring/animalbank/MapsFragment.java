@@ -4,36 +4,45 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.firestore.DocumentReference;
+
+import java.util.HashMap;
+
+import static dk.au.mad21spring.animalbank.Constants.ANIMAL_REF_INTENT_EXTRA;
 
 public class MapsFragment extends Fragment {
 
     private Repository repo;
 
+    // Inspired by https://stackoverflow.com/questions/38626685/google-maps-marker-how-saved-data
+    private HashMap<Marker, DocumentReference> markerReferences;
+
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            LatLng sydney = new LatLng(-34, 151);
             //Populate map:
             repo.getAllAnimals((animalFireStoreModel) -> {
                 addAnimalToMap(animalFireStoreModel, googleMap);
             });
             googleMap.setOnInfoWindowClickListener((marker) -> {
-                marker.getId();
-                Toast.makeText(getActivity(), "Info window clicked",
-                        Toast.LENGTH_SHORT).show();
+                DocumentReference docRef = markerReferences.get(marker);
+                Intent intent = new Intent(getActivity(), InfoActivity.class);
+                intent.putExtra(ANIMAL_REF_INTENT_EXTRA, docRef.getPath()); //pass animal path to info activity
+                startActivity(intent);
             });
         }
     };
@@ -55,10 +64,13 @@ public class MapsFragment extends Fragment {
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+        markerReferences = new HashMap<Marker,DocumentReference>();
     }
 
     private void addAnimalToMap(AnimalFireStoreModel animal, GoogleMap googleMap) {
-        LatLng sydney = new LatLng(animal.getLatitude(), animal.getLongitude());
-        googleMap.addMarker(new MarkerOptions().position(sydney).title(animal.getName()));
+        LatLng newAnimal = new LatLng(animal.getLatitude(), animal.getLongitude());
+        Marker marker =  googleMap.addMarker(new MarkerOptions().position(newAnimal).title(animal.getName()));
+        //Add marker/docref lookup which can be used to navigate to infoview when clicking markers.
+        markerReferences.put(marker, animal.documentReference);
     }
 }

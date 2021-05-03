@@ -79,7 +79,7 @@ public class AddAnimalFragment extends Fragment {
         animal.image = cameraParentFragment.getCapturedImage();
         repo.insertAnimal(animal,(documentReference)->{
             Intent intent = new Intent(getActivity(), InfoActivity.class);
-            intent.putExtra(ANIMAL_REF_INTENT_EXTRA, documentReference.getPath()); //pass image path to info activity
+            intent.putExtra(ANIMAL_REF_INTENT_EXTRA, documentReference.getPath()); //pass animal path to info activity
             startActivity(intent);
         },(error)->{});
     }

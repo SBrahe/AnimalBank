@@ -53,7 +53,6 @@ public class InfoActivity extends AppCompatActivity {
 
         //get doc ref from intent extras.
         DocumentReference animalRef = db.document(getIntent().getStringExtra("animalRef"));
-        DocumentReference doc = new DocumentReference()
         //Attach listener that updates on changes.
         animalRef.addSnapshotListener(this,(snapshot, e) -> {
             if (e != null) {
@@ -66,7 +65,7 @@ public class InfoActivity extends AppCompatActivity {
                 Log.d(TAG, "Current data: "+ wikinotes);
                 txtAnimalName.setText(snapshot.get("name").toString());
                 txtSpottedDate.setText(snapshot.get("date").toString());
-                txtSpottedNear.setText(snapshot.get("location").toString());
+                txtSpottedNear.setText(snapshot.get("latitude").toString() + snapshot.get("longitude").toString());
                 txtWikiNotes.setText((String)snapshot.get("wikiNotes"));
             } else {
                 Log.d(TAG, "Current data: null");
