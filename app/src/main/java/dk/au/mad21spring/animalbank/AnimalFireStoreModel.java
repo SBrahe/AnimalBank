@@ -1,14 +1,9 @@
 package dk.au.mad21spring.animalbank;
 
-import android.graphics.Bitmap;
-import android.location.Location;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Exclude;
 
-import java.util.Date;
-import java.util.Map;
 
 public class AnimalFireStoreModel {
     @Exclude
@@ -21,7 +16,7 @@ public class AnimalFireStoreModel {
     private double longitude;
 
     public AnimalFireStoreModel() {
-        //empty contructor needed with firebase
+        //empty constructor needed with firebase
     }
 
 
