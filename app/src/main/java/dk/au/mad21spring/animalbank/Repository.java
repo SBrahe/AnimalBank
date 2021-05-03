@@ -15,6 +15,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -108,11 +109,14 @@ public class Repository {
 
     }
 
-    public void deleteAnimal(Animal animal, Consumer<AnimalFireStoreModel> onSuccess, Consumer<Error> onError) {
+    public void deleteAnimal(AnimalFireStoreModel animal, Runnable onSuccess, Consumer<Error> onError) {
 
     }
 
-
+    public void deleteAnimal(String animalDocumentId, Runnable onSuccess, Consumer<Exception> onError) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(ANIMAL_COLLECTION_NAME).document(animalDocumentId).delete().addOnSuccessListener((a)->{onSuccess.run();}).addOnFailureListener((e)->{onError.accept(e);});
+    }
 
 
     private void trySetWikiInfo(String AnimalName, DocumentReference documentReference, Consumer<VolleyError> outerOnError) {

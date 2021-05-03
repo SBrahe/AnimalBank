@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -30,21 +31,15 @@ public class MapsFragment extends Fragment {
     // Inspired by https://stackoverflow.com/questions/38626685/google-maps-marker-how-saved-data
     private HashMap<Marker, DocumentReference> markerReferences;
 
-    private OnMapReadyCallback callback = new OnMapReadyCallback() {
+    //Save ref in order to refresh manually.
+    private GoogleMap map;
+
+    private OnMapReadyCallback onMapReady = new OnMapReadyCallback() {
 
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            //Populate map:
-            repo.getAllAnimals((animalFireStoreModel) -> {
-                addAnimalToMap(animalFireStoreModel, googleMap);
-            });
-            googleMap.setOnInfoWindowClickListener((marker) -> {
-                DocumentReference docRef = markerReferences.get(marker);
-                Intent intent = new Intent(getActivity(), InfoActivity.class);
-                intent.putExtra(ANIMAL_REF_INTENT_EXTRA, docRef.getPath()); //pass animal path to info activity
-                startActivity(intent);
-
-            });
+            map = googleMap;
+            populateMap(map);
         }
     };
 
@@ -54,6 +49,8 @@ public class MapsFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         repo = Repository.getAnimalRepository(getActivity().getApplicationContext());
+        markerReferences = new HashMap<Marker,DocumentReference>();
+
         return inflater.inflate(R.layout.fragment_maps, container, false);
     }
 
@@ -63,9 +60,30 @@ public class MapsFragment extends Fragment {
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
-            mapFragment.getMapAsync(callback);
+            mapFragment.getMapAsync(onMapReady);
         }
-        markerReferences = new HashMap<Marker,DocumentReference>();
+    }
+
+    @Override
+    public void onResume() {
+        if(map!=null){
+            map.clear();
+            populateMap(map);
+        }
+        super.onResume();
+    }
+
+    private void populateMap(GoogleMap googleMap){
+        repo.getAllAnimals((animalFireStoreModel) -> {
+            addAnimalToMap(animalFireStoreModel, map);
+        });
+        map.setOnInfoWindowClickListener((marker) -> {
+            DocumentReference docRef = markerReferences.get(marker);
+            Intent intent = new Intent(getActivity(), InfoActivity.class);
+            intent.putExtra(ANIMAL_REF_INTENT_EXTRA, docRef.getPath()); //pass animal path to info activity
+            startActivity(intent);
+
+        });
     }
 
     private void addAnimalToMap(AnimalFireStoreModel animal, GoogleMap googleMap) {

@@ -19,6 +19,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+
 import dk.au.mad21spring.animalbank.Constants;
 
 public class InfoActivity extends AppCompatActivity {
@@ -56,10 +57,14 @@ public class InfoActivity extends AppCompatActivity {
 
         Repository repo = Repository.getAnimalRepository(getApplicationContext());
         btnBack.setOnClickListener(v -> onBackPressed());
-        //btnDelete.setOnClickListener(v->repo.deleteAnimal());
 
         //get doc ref from intent extras.
         DocumentReference animalRef = db.document(getIntent().getStringExtra(Constants.ANIMAL_REF_INTENT_EXTRA));
+        btnDelete.setOnClickListener(v -> {
+            repo.deleteAnimal(animalRef.getId(), () -> {}, (err) -> {});
+            finish();
+        });
+
         //Attach listener that updates on changes.
         animalRef.addSnapshotListener(this, (snapshot, e) -> {
             if (e != null) {
@@ -79,7 +84,6 @@ public class InfoActivity extends AppCompatActivity {
                 }
                 txtWikiNotes.setText(animal.getDescription());
                 Glide.with(userImageView.getContext()).load(animal.getImageURI()).into(userImageView);
-
             } else {
                 Log.d(TAG, "Current data: null");
             }
