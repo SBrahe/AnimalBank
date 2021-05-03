@@ -53,7 +53,7 @@ public class InfoActivity extends AppCompatActivity {
 
         //get doc ref from intent extras.
         DocumentReference animalRef = db.document(getIntent().getStringExtra("animalRef"));
-
+        DocumentReference doc = new DocumentReference()
         //Attach listener that updates on changes.
         animalRef.addSnapshotListener(this,(snapshot, e) -> {
             if (e != null) {

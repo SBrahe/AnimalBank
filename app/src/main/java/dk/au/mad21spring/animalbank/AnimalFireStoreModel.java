@@ -2,12 +2,13 @@ package dk.au.mad21spring.animalbank;
 
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Exclude;
 
 
 public class AnimalFireStoreModel {
     @Exclude
-    public String id;
+    public DocumentReference documentReference;
     private String name;
     private String description;
     private Timestamp date;

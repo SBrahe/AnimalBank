@@ -88,7 +88,7 @@ public class Repository {
         db.collection(ANIMAL_COLLECTION_NAME).get().onSuccessTask((snapshot)->{
             snapshot.iterator().forEachRemaining((item)->{
                 AnimalFireStoreModel animal = item.toObject(AnimalFireStoreModel.class);
-                animal.id = item.getId();
+                animal.documentReference = item.getReference();
                 doForEach.accept(animal);
             });
             return null;
