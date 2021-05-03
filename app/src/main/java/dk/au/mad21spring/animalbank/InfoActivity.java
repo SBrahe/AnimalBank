@@ -1,5 +1,6 @@
 package dk.au.mad21spring.animalbank;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -37,6 +39,8 @@ public class InfoActivity extends AppCompatActivity {
     private TextView txtWikiNotes;
     private ImageView userImageView;
 
+    Repository repo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,14 +59,24 @@ public class InfoActivity extends AppCompatActivity {
         userImageView = findViewById(R.id.userImageView);
 
 
-        Repository repo = Repository.getAnimalRepository(getApplicationContext());
+        repo = Repository.getAnimalRepository(getApplicationContext());
         btnBack.setOnClickListener(v -> onBackPressed());
 
         //get doc ref from intent extras.
         DocumentReference animalRef = db.document(getIntent().getStringExtra(Constants.ANIMAL_REF_INTENT_EXTRA));
         btnDelete.setOnClickListener(v -> {
-            repo.deleteAnimal(animalRef.getId(), () -> {}, (err) -> {});
-            finish();
+            AlertDialog dialog = new AlertDialog.Builder(this).setTitle(R.string.app_name).setTitle("Are you sure you want to delete this animal").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    repo.deleteAnimal(animalRef.getId(), () -> {}, (err) -> {});
+                    finish();
+                }
+            }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            }).create();
+            dialog.show();
         });
 
         //Attach listener that updates on changes.
@@ -89,6 +103,8 @@ public class InfoActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     // onBackPressed should not be overridden since the info view can be accessed both from the map and the list view.
     // The default back functionality can handle this.
