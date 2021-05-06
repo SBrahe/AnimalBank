@@ -18,8 +18,8 @@ public class SingleAnimalViewModel extends ViewModel {
     private LiveData<AnimalFireStoreModel> animal;
 
     public SingleAnimalViewModel(Application application, String animalFireStorePath) {
-        this.repo = repo;
-
+        this.repo = Repository.getAnimalRepository(application);
+        this.animalFireStorePath = animalFireStorePath;
     }
 
     public LiveData<AnimalFireStoreModel> getAnimal(){

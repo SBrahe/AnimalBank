@@ -5,6 +5,8 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Exclude;
 
+import java.sql.Time;
+
 
 public class AnimalFireStoreModel {
     @Exclude
@@ -27,6 +29,7 @@ public class AnimalFireStoreModel {
 
     public AnimalFireStoreModel() {
         //empty constructor needed with firebase
+        date = Timestamp.now();
     }
 
 

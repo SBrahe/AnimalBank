@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -89,6 +91,7 @@ public class Repository {
         AnimalFireStoreModel toUpload = new AnimalFireStoreModel(animal);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference animalRef = db.collection(user.getUid()).document(); //create new animal document in firestore
+        onSuccess.accept(animalRef);
         animalRef.set(toUpload);
         Log.d(TAG, "insertAnimal: attempting to upload image");
         this.uploadImage(animal.image, imageUri -> {
@@ -98,6 +101,7 @@ public class Repository {
         this.trySetWikiInfo(animal.name, animalRef, (e) -> {
         });
         //Refactor to Tasks.whenAllComplete()
+
     }
 
     public void getAllAnimals(Consumer<AnimalFireStoreModel> doForEach){
@@ -123,9 +127,13 @@ public class Repository {
                 return;
             }
             if (snapshot != null && snapshot.exists()) {
-                AnimalFireStoreModel animal = snapshot.toObject(AnimalFireStoreModel.class);
-                animal.documentReference = snapshot.getReference();
-                animalLiveData.setValue(animal);
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(() -> {
+                    AnimalFireStoreModel animal = snapshot.toObject(AnimalFireStoreModel.class);
+                    animal.documentReference = snapshot.getReference();
+                    animalLiveData.setValue(animal);
+                });
+
             } else {
                 Log.d(TAG, "Current data: null");
             }
