@@ -86,7 +86,7 @@ public class Repository {
     public void insertAnimal(Animal animal, Consumer<DocumentReference> onSuccess, Consumer<Error> onError) {
         AnimalFireStoreModel toUpload = new AnimalFireStoreModel(animal);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference animalRef = db.collection(user.getUid()+"/").document(); //create new animal document in firestore
+        DocumentReference animalRef = db.collection(user.getUid()).document(); //create new animal document in firestore
         animalRef.set(toUpload);
         Log.d(TAG, "insertAnimal: attempting to upload image");
         this.uploadImage(animal.image, imageUri -> {
