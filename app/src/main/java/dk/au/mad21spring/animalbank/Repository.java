@@ -2,6 +2,8 @@ package dk.au.mad21spring.animalbank;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
@@ -13,7 +15,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.tasks.Tasks;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,13 +30,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.DESCRIPTION_FIELD;
+import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.IMAGE_URI_FIELD;
 import static dk.au.mad21spring.animalbank.Constants.ANIMAL_COLLECTION_NAME;
 
 //this code was heavily influenced by this android developer tutorial: https://developer.android.com/codelabs/android-training-livedata-viewmodel
@@ -75,8 +82,8 @@ public class Repository {
         DocumentReference animalRef = db.collection(ANIMAL_COLLECTION_NAME).document(); //create new animal document in firestore
         animalRef.set(toUpload);
         this.uploadImage(animal.image, imageUri -> {
-            animalRef.update("imageURI", imageUri.toString());
-            Log.d(TAG, "uploadImage: uploaded image and update db, imageURI: " + imageUri);
+            animalRef.update(IMAGE_URI_FIELD, imageUri.toString());
+            Log.d(TAG, "uploadImage: uploaded image and update db, imageuri: " + imageUri);
         });
         this.trySetWikiInfo(animal.name, animalRef, (e) -> {
         });
@@ -87,7 +94,9 @@ public class Repository {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(ANIMAL_COLLECTION_NAME).get().onSuccessTask((snapshot)->{
             snapshot.iterator().forEachRemaining((item)->{
-                doForEach.accept(new AnimalFireStoreModel(item.getData()));
+                AnimalFireStoreModel animal = item.toObject(AnimalFireStoreModel.class);
+                animal.documentReference = item.getReference();
+                doForEach.accept(animal);
             });
             return null;
         });
@@ -100,10 +109,14 @@ public class Repository {
 
     }
 
-    public void deleteAnimal(Animal animal, Consumer<Animal> onSuccess, Consumer<Error> onError) {
+    public void deleteAnimal(AnimalFireStoreModel animal, Runnable onSuccess, Consumer<Error> onError) {
+
     }
 
-
+    public void deleteAnimal(String animalDocumentId, Runnable onSuccess, Consumer<Exception> onError) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(ANIMAL_COLLECTION_NAME).document(animalDocumentId).delete().addOnSuccessListener((a)->{onSuccess.run();}).addOnFailureListener((e)->{onError.accept(e);});
+    }
 
 
     private void trySetWikiInfo(String AnimalName, DocumentReference documentReference, Consumer<VolleyError> outerOnError) {
@@ -131,7 +144,7 @@ public class Repository {
                                 //add wikinotes to animal in firestore
                                 for (Map.Entry<String, JsonElement> entry : pages.entrySet()) {
                                     JsonObject entryAsJson = entry.getValue().getAsJsonObject();
-                                    documentReference.update("wikiNotes", entryAsJson.get("extract").getAsString());
+                                    documentReference.update(DESCRIPTION_FIELD, entryAsJson.get("extract").getAsString());
                                     Log.d(TAG, "getWikiNotes: added wiki notes to animal in db!");
                                 }
 
@@ -225,5 +238,20 @@ public class Repository {
                 }
             }
         });
+    }
+
+    public String getLocalityFromLatLong(double latitude, double longitude)  {
+        // Uses code from https://stackoverflow.com/questions/2296377/how-to-get-city-name-from-latitude-and-longitude-coordinates-in-google-maps
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (addresses.size() > 0) {
+            return addresses.get(0).getLocality();
+        }
+        return "";
     }
 }
