@@ -59,7 +59,6 @@ public class Repository {
     public static Repository instance = null;
     ExecutorService executorService;
     FirebaseStorage storage;
-    //private final LiveData<List<Animal>> animals;
     private RequestQueue queue;
     private Context context;
 

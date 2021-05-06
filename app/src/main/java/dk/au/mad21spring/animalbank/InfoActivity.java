@@ -49,21 +49,21 @@ public class InfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
 
-        btnBack = findViewById(R.id.backBtn);
-        btnDelete = findViewById(R.id.deleteBtn);
-        txtAnimalName = findViewById(R.id.animalNameText);
-        txtSpottedDate = findViewById(R.id.spottedDateText);
-        txtSpottedNear = findViewById(R.id.spottedLocationText);
-        txtUserNotes = findViewById(R.id.userNotesText);
-        txtWikiNotes = findViewById(R.id.wikiNotesText);
-        userImageView = findViewById(R.id.userImageView);
+        this.btnBack        = findViewById(R.id.backBtn);
+        this.btnDelete      = findViewById(R.id.deleteBtn);
+        this.txtAnimalName  = findViewById(R.id.animalNameText);
+        this.txtSpottedDate = findViewById(R.id.spottedDateText);
+        this.txtSpottedNear = findViewById(R.id.spottedLocationText);
+        this.txtUserNotes   = findViewById(R.id.userNotesText);
+        this.txtWikiNotes   = findViewById(R.id.wikiNotesText);
+        this.userImageView  = findViewById(R.id.userImageView);
 
         SingleAnimalViewModelFactory vmFactory = new SingleAnimalViewModelFactory(getApplication(),getIntent().getStringExtra(Constants.ANIMAL_REF_INTENT_EXTRA) );
-        viewModel = new ViewModelProvider(this, vmFactory).get(SingleAnimalViewModel.class);
-        viewModel.getAnimal().observe(this, this::refreshUI);
-        btnBack.setOnClickListener(v -> onBackPressed());
-        btnDelete.setOnClickListener(this::onDeletePressed);
-        userImageView.setOnClickListener(this::onImageClicked);
+        this.viewModel = new ViewModelProvider(this, vmFactory).get(SingleAnimalViewModel.class);
+        this.viewModel.getAnimal().observe(this, this::refreshUI);
+        this.btnBack.setOnClickListener(v -> onBackPressed());
+        this.btnDelete.setOnClickListener(this::onDeletePressed);
+        this.userImageView.setOnClickListener(this::onImageClicked);
     }
 
     private void onImageClicked(View view){
