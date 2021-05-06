@@ -29,7 +29,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -151,7 +150,7 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
     /*----------------------------------------------------------------------------------------*/
 
     public Location getLocationAtCapture() {
-        return this.locationAtCapture;
+            return this.locationAtCapture;
     }
 
     @SuppressLint("MissingPermission")
@@ -218,9 +217,13 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
                 getLocation(new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
-                        //TODO: Handle if a null location is received.
-                        locationAtCapture = location;
-                        Log.e("locationatcapture", location.toString());
+                        try {
+                            locationAtCapture = location;
+                            Log.e("locationatcapture", location.toString());
+                        } catch (java.lang.NullPointerException exception)
+                        {
+                            locationAtCapture = null;
+                        }
                     }
                 });
                 goToAddAnimalMode();

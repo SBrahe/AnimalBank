@@ -86,13 +86,6 @@ public class ListFragment extends Fragment implements IAnimalListActionListener{
 
     @Override
     public void onAnimalPressed(AnimalFireStoreModel animal) {
-        /*DocumentSnapshot documentSnapshot;
-        animal = documentSnapshot.toObject(AnimalFireStoreModel.class);
-        String id = documentSnapshot.getId();
-        String path = documentSnapshot.getReference().getPath();
-        Intent ListIntent = new Intent(getActivity().getApplicationContext(),InfoActivity.class);
-        ListIntent.putExtra(Constants.ANIMAL_REF_INTENT_EXTRA,path);
-        startActivity(ListIntent);*/
         Intent intent = new Intent(getActivity(), InfoActivity.class);
         intent.putExtra(ANIMAL_REF_INTENT_EXTRA, animal.documentReference.getPath()); //pass animal path to info activity
         startActivity(intent);

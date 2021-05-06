@@ -18,8 +18,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -61,6 +60,7 @@ public class Repository {
     FirebaseStorage storage;
     private RequestQueue queue;
     private Context context;
+    FirebaseUser user;
 
     private Repository(Context context) {
         if (queue == null) {
@@ -80,12 +80,17 @@ public class Repository {
         return (instance);
     }
 
+    public void setUser(FirebaseUser user){
+        this.user = user;
+    }
+
     //code inspired by https://firebase.google.com/docs/storage/android/upload-files
     public void insertAnimal(Animal animal, Consumer<DocumentReference> onSuccess, Consumer<Error> onError) {
         AnimalFireStoreModel toUpload = new AnimalFireStoreModel(animal);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference animalRef = db.collection(ANIMAL_COLLECTION_NAME).document(); //create new animal document in firestore
+        DocumentReference animalRef = db.collection(user.getUid()).document(); //create new animal document in firestore
         animalRef.set(toUpload);
+        Log.d(TAG, "insertAnimal: attempting to upload image");
         this.uploadImage(animal.image, imageUri -> {
             animalRef.update(IMAGE_URI_FIELD, imageUri.toString());
             Log.d(TAG, "uploadImage: uploaded image and update db, imageuri: " + imageUri);
@@ -148,7 +153,7 @@ public class Repository {
             public void onSuccess(JSONObject ApiResponse) {
                 try {
                     //get the title of the wiki page from the wiki search api
-                    String animalname = null;
+                    String animalname;
                     animalname = ApiResponse.getJSONObject("query").getJSONArray("search").getJSONObject(0).getString("title");
                     Log.d(TAG, "animalname:");
                     Log.d(TAG, animalname);
@@ -240,19 +245,22 @@ public class Repository {
             @Override
             public void run() {
                 try {
-
+                    Log.d(TAG, "uploadImage: runnable started");
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     image.compress(Bitmap.CompressFormat.JPEG, 50, baos);
                     byte[] data = baos.toByteArray();
 
                     StorageReference storageRef = storage.getReference();
-                    StorageReference imageRef = storageRef.child("public/images/" + Calendar.getInstance().getTime());
+                    Log.d(TAG, "uploadImage: user" + user);
+                    StorageReference imageRef = storageRef.child("images/" + user.getUid() + "/" + Calendar.getInstance().getTime());
 
                     UploadTask uploadTask = imageRef.putBytes(data);
                     uploadTask.addOnFailureListener(exception -> {
+                        Log.d(TAG, "uploadImage: failed to upload imagem, exception: "+exception);
                         Toast toast = Toast.makeText(context, "Couldn't upload image", Toast.LENGTH_SHORT);
                         toast.show();
                     }).addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        Log.d(TAG, "uploadImage: successfully uploaded image");
                         Toast toast = Toast.makeText(context, "Image uploaded", Toast.LENGTH_SHORT);
                         toast.show();
                         callback.onComplete(uri);
