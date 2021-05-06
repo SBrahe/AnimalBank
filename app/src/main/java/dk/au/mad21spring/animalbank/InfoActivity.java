@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Task;
@@ -23,16 +26,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import dk.au.mad21spring.animalbank.Constants;
+import dk.au.mad21spring.animalbank.viewmodels.SingleAnimalViewModel;
+import dk.au.mad21spring.animalbank.viewmodels.SingleAnimalViewModelFactory;
 
 import static dk.au.mad21spring.animalbank.Constants.ANIMAL_REF_INTENT_EXTRA;
 import static dk.au.mad21spring.animalbank.Constants.IMAGE_URL_INTENT_EXTRA;
 
 public class InfoActivity extends AppCompatActivity {
-
     private static final String TAG = "InfoActivity";
-
-    FirebaseFirestore db;
-
     private Button btnBack;
     private Button btnDelete;
     private TextView txtAnimalName;
@@ -41,17 +42,13 @@ public class InfoActivity extends AppCompatActivity {
     private TextView txtUserNotes;
     private TextView txtWikiNotes;
     private ImageView userImageView;
-
-    Repository repo;
+    private SingleAnimalViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
 
-        db = FirebaseFirestore.getInstance();
-
-        //initialize widgets
         btnBack = findViewById(R.id.backBtn);
         btnDelete = findViewById(R.id.deleteBtn);
         txtAnimalName = findViewById(R.id.animalNameText);
@@ -61,73 +58,46 @@ public class InfoActivity extends AppCompatActivity {
         txtWikiNotes = findViewById(R.id.wikiNotesText);
         userImageView = findViewById(R.id.userImageView);
 
-
-        repo = Repository.getAnimalRepository(getApplicationContext());
+        SingleAnimalViewModelFactory vmFactory = new SingleAnimalViewModelFactory(getApplication(),getIntent().getStringExtra(Constants.ANIMAL_REF_INTENT_EXTRA) );
+        viewModel = new ViewModelProvider(this, vmFactory).get(SingleAnimalViewModel.class);
+        viewModel.getAnimal().observe(this, this::refreshUI);
         btnBack.setOnClickListener(v -> onBackPressed());
-
-        //get doc ref from intent extras.
-        DocumentReference animalRef = db.document(getIntent().getStringExtra(Constants.ANIMAL_REF_INTENT_EXTRA));
-        btnDelete.setOnClickListener(v -> {
-            AlertDialog dialog = new AlertDialog.Builder(this).setTitle(R.string.app_name).setTitle("Are you sure you want to delete this animal").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    repo.deleteAnimal(animalRef.getId(), () -> {
-                    }, (err) -> {
-                    });
-                    finish();
-                }
-            }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            }).create();
-            dialog.show();
-        });
-
-        //Attach listener that updates on changes.
-        animalRef.addSnapshotListener(this, (snapshot, e) -> {
-            if (e != null) {
-                Log.w(TAG, "Listen failed.", e);
-                return;
-            }
-
-            if (snapshot != null && snapshot.exists()) {
-                AnimalFireStoreModel animal = snapshot.toObject(AnimalFireStoreModel.class);
-                txtAnimalName.setText(animal.getName());
-                txtSpottedDate.setText(animal.getDate().toDate().toString());
-                String near = Repository.getAnimalRepository(getApplicationContext()).getLocalityFromLatLong(animal.getLatitude(), animal.getLongitude());
-                if (near != null) {
-                    txtSpottedNear.setText(near);
-                } else {
-                    txtSpottedNear.setText(animal.getLatitude() + ", " + animal.getLongitude());
-                }
-                txtWikiNotes.setText(animal.getDescription());
-                Glide.with(userImageView.getContext()).load(animal.getImageURI()).into(userImageView);
-
-                userImageView.setOnClickListener(v -> {
-                    Intent intent = new Intent(this, FullScreenImgActivity.class);
-                    intent.putExtra(IMAGE_URL_INTENT_EXTRA,animal.getImageURI()); //pass animal path to full screen activity
-                    startActivity(intent);
-                });
-            } else {
-                Log.d(TAG, "Current data: null");
-            }
-        });
-
-
+        btnDelete.setOnClickListener(this::onDeletePressed);
+        userImageView.setOnClickListener(this::onImageClicked);
     }
 
+    private void onImageClicked(View view){
+        Intent intent = new Intent(this, FullScreenImgActivity.class);
+        intent.putExtra(IMAGE_URL_INTENT_EXTRA,viewModel.getAnimal().getValue().getImageURI()); //pass animal path to full screen activity
+        startActivity(intent);
+    }
 
-    // onBackPressed should not be overridden since the info view can be accessed both from the map and the list view.
-    // The default back functionality can handle this.
+    private void onDeletePressed(View view){
+        AlertDialog dialog = new AlertDialog.Builder(this).setTitle(R.string.app_name).setTitle("Are you sure you want to delete this animal").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                viewModel.deleteAnimal(()->{},(ex)->{});
+                finish();
+            }
+        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).create();
+        dialog.show();
+    }
 
-    //go to list when back button is pressed
-    //@Override
-    //public void onBackPressed() {
-    //    super.onBackPressed();
-    //    startActivity(new Intent(InfoActivity.this, ListFragment.class));
-    //    finish();
-    //}
-
+    private void refreshUI(AnimalFireStoreModel animal){
+        txtAnimalName.setText(animal.getName());
+        txtSpottedDate.setText(animal.getDate().toDate().toString());
+        String near = Repository.getAnimalRepository(getApplicationContext()).getLocalityFromLatLong(animal.getLatitude(), animal.getLongitude());
+        if (near != null) {
+            txtSpottedNear.setText(near);
+        } else {
+            txtSpottedNear.setText(animal.getLatitude() + ", " + animal.getLongitude());
+        }
+        txtWikiNotes.setText(animal.getDescription());
+        Glide.with(userImageView.getContext()).load(animal.getImageURI()).into(userImageView);
+    }
 
 }

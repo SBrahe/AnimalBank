@@ -22,18 +22,18 @@ public class SingleAnimalViewModel extends ViewModel {
 
     }
 
-    LiveData<AnimalFireStoreModel> getAnimal(){
+    public LiveData<AnimalFireStoreModel> getAnimal(){
         if (this.animal == null){
             this.animal = repo.getAnimal(this.animalFireStorePath);
         }
         return this.animal;
     }
 
-    void setAnimal(AnimalFireStoreModel animalFireStoreModel){
+    public void setAnimal(AnimalFireStoreModel animalFireStoreModel){
         repo.updateAnimal(animalFireStoreModel,(docRef)->{},(error -> {}));
     }
 
-    void deleteAnimal(Runnable onSuccess, Consumer<Exception> onError){
+    public void deleteAnimal(Runnable onSuccess, Consumer<Exception> onError){
         repo.deleteAnimal(animalFireStorePath, onSuccess, onError);
     }
 }

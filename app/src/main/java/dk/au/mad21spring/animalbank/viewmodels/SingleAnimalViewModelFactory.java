@@ -10,9 +10,12 @@ public class SingleAnimalViewModelFactory implements ViewModelProvider.Factory {
     private String animalFireStorePath;
     private Application application;
 
-    public SingleAnimalViewModelFactory(String animalFireStorePath, Application application) {
+    public SingleAnimalViewModelFactory(Application application, String animalFireStorePath) {
         this.animalFireStorePath = animalFireStorePath;
         this.application = application;
+
+
+
     }
 
     @NonNull
