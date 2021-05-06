@@ -74,7 +74,7 @@ public class MapsFragment extends Fragment {
     }
 
     private void populateMap(GoogleMap googleMap){
-        repo.getAllAnimals((animalFireStoreModel) -> {
+        repo.getAllAnimalsAsync((animalFireStoreModel) -> {
             addAnimalToMap(animalFireStoreModel, map);
         });
         map.setOnInfoWindowClickListener((marker) -> {

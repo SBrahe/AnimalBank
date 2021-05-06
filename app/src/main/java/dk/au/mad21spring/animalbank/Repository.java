@@ -36,6 +36,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -104,9 +105,10 @@ public class Repository {
 
     }
 
-    public void getAllAnimals(Consumer<AnimalFireStoreModel> doForEach){
+    //Async iteration over all animals in collection
+    public void getAllAnimalsAsync(Consumer<AnimalFireStoreModel> doForEach){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(ANIMAL_COLLECTION_NAME).get().onSuccessTask((snapshot)->{
+        db.collection(user.getUid()).get().onSuccessTask((snapshot)->{
             snapshot.iterator().forEachRemaining((item)->{
                 AnimalFireStoreModel animal = item.toObject(AnimalFireStoreModel.class);
                 animal.documentReference = item.getReference();
@@ -114,6 +116,19 @@ public class Repository {
             });
             return null;
         });
+    }
+
+    //To be used in ViewModel
+    public LiveData<ArrayList<AnimalFireStoreModel>> getAllAnimals(){
+        MutableLiveData<ArrayList<AnimalFireStoreModel>> animalsLiveData = new MutableLiveData<ArrayList<AnimalFireStoreModel>>();
+        ArrayList<AnimalFireStoreModel> animalsList = new ArrayList<AnimalFireStoreModel>();
+        animalsLiveData.setValue(animalsList);
+        this.getAllAnimalsAsync((animalFireStoreModel)->{
+            ArrayList<AnimalFireStoreModel> updatedList =  animalsLiveData.getValue();
+            updatedList.add(animalFireStoreModel);
+            animalsLiveData.setValue(updatedList);
+        });
+        return animalsLiveData;
     }
 
     public LiveData<AnimalFireStoreModel> getAnimal(String animalFireStorePath) {

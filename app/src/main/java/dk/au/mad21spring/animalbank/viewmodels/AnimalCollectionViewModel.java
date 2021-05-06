@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 
-import dk.au.mad21spring.animalbank.Animal;
 import dk.au.mad21spring.animalbank.AnimalFireStoreModel;
 import dk.au.mad21spring.animalbank.Repository;
 
@@ -17,8 +16,12 @@ public class AnimalCollectionViewModel extends ViewModel {
 
     public AnimalCollectionViewModel(Application application) {
         this.repo = Repository.getAnimalRepository(application);
-
     }
 
-
+    public LiveData<ArrayList<AnimalFireStoreModel>> getAnimals(){
+        if (this.animals == null){
+            this.animals = repo.getAllAnimals();
+        }
+        return this.animals;
+    }
 }

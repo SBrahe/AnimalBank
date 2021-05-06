@@ -73,7 +73,6 @@ public class AnimalFireStoreModel {
         this.imageURI = imageURI;
     }
 
-
     public double getLatitude() {
         return latitude;
     }

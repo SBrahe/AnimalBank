@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +26,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import dk.au.mad21spring.animalbank.viewmodels.AnimalCollectionViewModel;
+import dk.au.mad21spring.animalbank.viewmodels.AnimalCollectionViewModelFactory;
+import dk.au.mad21spring.animalbank.viewmodels.SingleAnimalViewModel;
+import dk.au.mad21spring.animalbank.viewmodels.SingleAnimalViewModelFactory;
+
 import static dk.au.mad21spring.animalbank.Constants.ANIMAL_REF_INTENT_EXTRA;
 
 
@@ -33,7 +39,7 @@ public class ListFragment extends Fragment implements IAnimalListActionListener{
     private RecyclerView recyclerView;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private RecyclerView.LayoutManager layoutManager;
-    private ArrayList<AnimalFireStoreModel> animals;
+    private AnimalCollectionViewModel viewModel;
     private AnimalAdapter adapter;
     private View view;
     public ListFragment() {
@@ -44,44 +50,26 @@ public class ListFragment extends Fragment implements IAnimalListActionListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         view = inflater.inflate(R.layout.fragment_list, container, false);
         recyclerView = view.findViewById(R.id.recycler_view);
         layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
-        animals = new ArrayList<>();
-        setupFirebaseListener();
+        AnimalCollectionViewModelFactory vmFactory = new AnimalCollectionViewModelFactory(getActivity().getApplication());
+        this.viewModel = new ViewModelProvider(this, vmFactory).get(AnimalCollectionViewModel.class);
+        viewModel.getAnimals().observe(this, this::refreshUI);
         return view;
-
     }
 
-    private void setupFirebaseListener() {
-        db.collection("animals").orderBy("date", Query.Direction.DESCENDING).get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                        for(DocumentSnapshot documentSnapshot:list){
-                            AnimalFireStoreModel animal = documentSnapshot.toObject(AnimalFireStoreModel.class);
-                            animal.documentReference = documentSnapshot.getReference();
-                            animals.add(animal);
-                        }
-                        if(animals.size() > 0){
-                            if(adapter == null){
-                                adapter= new AnimalAdapter(animals,ListFragment.this);
-                                recyclerView.setAdapter(adapter);
-                            } else{
-                                adapter.UpdateList(animals);
-                                adapter.notifyDataSetChanged();
-                            }
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                //blabla
+    private void refreshUI(ArrayList<AnimalFireStoreModel> animals){
+        if(animals.size() > 0){
+            if(adapter == null){
+                adapter= new AnimalAdapter(animals,ListFragment.this);
+                recyclerView.setAdapter(adapter);
+            } else{
+                adapter.UpdateList(animals);
+                adapter.notifyDataSetChanged();
             }
-        });
+        }
     }
 
     @Override
