@@ -24,6 +24,9 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import dk.au.mad21spring.animalbank.Constants;
 
+import static dk.au.mad21spring.animalbank.Constants.ANIMAL_REF_INTENT_EXTRA;
+import static dk.au.mad21spring.animalbank.Constants.IMAGE_URL_INTENT_EXTRA;
+
 public class InfoActivity extends AppCompatActivity {
 
     private static final String TAG = "InfoActivity";
@@ -68,7 +71,9 @@ public class InfoActivity extends AppCompatActivity {
             AlertDialog dialog = new AlertDialog.Builder(this).setTitle(R.string.app_name).setTitle("Are you sure you want to delete this animal").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    repo.deleteAnimal(animalRef.getId(), () -> {}, (err) -> {});
+                    repo.deleteAnimal(animalRef.getId(), () -> {
+                    }, (err) -> {
+                    });
                     finish();
                 }
             }).setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -98,12 +103,19 @@ public class InfoActivity extends AppCompatActivity {
                 }
                 txtWikiNotes.setText(animal.getDescription());
                 Glide.with(userImageView.getContext()).load(animal.getImageURI()).into(userImageView);
+
+                userImageView.setOnClickListener(v -> {
+                    Intent intent = new Intent(this, FullScreenImgActivity.class);
+                    intent.putExtra(IMAGE_URL_INTENT_EXTRA,animal.getImageURI()); //pass animal path to full screen activity
+                    startActivity(intent);
+                });
             } else {
                 Log.d(TAG, "Current data: null");
             }
         });
-    }
 
+
+    }
 
 
     // onBackPressed should not be overridden since the info view can be accessed both from the map and the list view.
