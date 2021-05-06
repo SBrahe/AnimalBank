@@ -26,7 +26,6 @@ public class AddAnimalFragment extends Fragment {
     private AddAnimalFragmentListener listener;
     private EditText txtEditAnimalName;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

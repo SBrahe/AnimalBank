@@ -13,19 +13,21 @@ public class AnimalFireStoreModel {
     public DocumentReference documentReference;
     private String name = "";
     private String description = "";
+    private String userNotes = "";
     private Timestamp date;
     private String imageURI = "";
     private double latitude = 0;
     private double longitude = 0;
 
     // To make sure the right spelling/casing is used when indexing documents directly.
-    public static final String DOCUMENT_REFERENCE_FIELD = "documentReference";
-    public static final String NAME_FIELD = "name";
-    public static final String DESCRIPTION_FIELD = "description";
-    public static final String DATE_FIELD = "date";
-    public static final String IMAGE_URI_FIELD = "imageURI";
-    public static final String LATITUDE_FIELD = "latitude";
-    public static final String LONGITUDE_FIELD = "longitude";
+    public static final String DOCUMENT_REFERENCE_FIELD ="documentReference";
+    public static final String NAME_FIELD="name";
+    public static final String USER_NOTES_FIELD="userNotes";
+    public static final String DESCRIPTION_FIELD="description";
+    public static final String DATE_FIELD="date";
+    public static final String IMAGE_URI_FIELD="imageURI";
+    public static final String LATITUDE_FIELD="latitude";
+    public static final String LONGITUDE_FIELD="longitude";
 
     public AnimalFireStoreModel() {
         //empty constructor needed with firebase
@@ -35,6 +37,7 @@ public class AnimalFireStoreModel {
 
     public AnimalFireStoreModel(Animal animal) {
         this.name = animal.name;
+        this.userNotes = animal.userNotes;
         this.description = animal.description;
         this.date = animal.date;
         this.latitude = animal.latitude;
@@ -47,6 +50,14 @@ public class AnimalFireStoreModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUserNotes() {
+        return userNotes;
+    }
+
+    public void setUserNotes(String userNotes) {
+        this.userNotes = userNotes;
     }
 
     public String getDescription() {

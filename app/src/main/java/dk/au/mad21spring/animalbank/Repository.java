@@ -20,6 +20,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -47,8 +49,13 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static com.firebase.ui.auth.AuthUI.getApplicationContext;
+import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.DATE_FIELD;
 import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.DESCRIPTION_FIELD;
 import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.IMAGE_URI_FIELD;
+import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.LATITUDE_FIELD;
+import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.LONGITUDE_FIELD;
+import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.NAME_FIELD;
+import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.USER_NOTES_FIELD;
 import static dk.au.mad21spring.animalbank.Constants.ANIMAL_COLLECTION_NAME;
 import static dk.au.mad21spring.animalbank.Constants.IMAGE_URL_INTENT_EXTRA;
 
@@ -157,11 +164,17 @@ public class Repository {
     }
 
     public void updateAnimal(AnimalFireStoreModel animal, Consumer<DocumentSnapshot> onSuccess, Consumer<Error> onError) {
-
+        animal.documentReference.update(NAME_FIELD,animal.getName());
+        animal.documentReference.update(USER_NOTES_FIELD,animal.getUserNotes());
+        animal.documentReference.update(DESCRIPTION_FIELD,animal.getDescription());
+        animal.documentReference.update(DATE_FIELD,animal.getDate());
+        animal.documentReference.update(IMAGE_URI_FIELD,animal.getImageURI());
+        animal.documentReference.update(LATITUDE_FIELD,animal.getLatitude());
+        animal.documentReference.update(LONGITUDE_FIELD,animal.getLongitude());
+        //refactor to Tasks.whenAllSuccess()
     }
 
     public void deleteAnimal(AnimalFireStoreModel animal, Runnable onSuccess, Consumer<Error> onError) {
-
     }
 
     public void deleteAnimal(String animalDocumentId, Runnable onSuccess, Consumer<Exception> onError) {

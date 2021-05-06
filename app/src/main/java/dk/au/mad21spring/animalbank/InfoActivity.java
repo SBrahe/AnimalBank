@@ -29,11 +29,13 @@ import dk.au.mad21spring.animalbank.Constants;
 import dk.au.mad21spring.animalbank.viewmodels.SingleAnimalViewModel;
 import dk.au.mad21spring.animalbank.viewmodels.SingleAnimalViewModelFactory;
 
+import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.USER_NOTES_FIELD;
 import static dk.au.mad21spring.animalbank.Constants.ANIMAL_REF_INTENT_EXTRA;
 import static dk.au.mad21spring.animalbank.Constants.IMAGE_URL_INTENT_EXTRA;
 
 public class InfoActivity extends AppCompatActivity {
     private static final String TAG = "InfoActivity";
+
     private Button btnBack;
     private Button btnDelete;
     private TextView txtAnimalName;
@@ -97,7 +99,18 @@ public class InfoActivity extends AppCompatActivity {
             txtSpottedNear.setText(animal.getLatitude() + ", " + animal.getLongitude());
         }
         txtWikiNotes.setText(animal.getDescription());
+        txtUserNotes.setText(animal.getUserNotes());
         Glide.with(userImageView.getContext()).load(animal.getImageURI()).into(userImageView);
     }
+    //save animal when back button is pressed
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        AnimalFireStoreModel animal = viewModel.getAnimal().getValue();
+        animal.setUserNotes(txtUserNotes.getText().toString());
+        viewModel.setAnimal(animal);
+        finish();
+    }
+
 
 }
