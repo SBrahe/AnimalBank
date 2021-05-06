@@ -5,12 +5,11 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Exclude;
 
-
-
 public class AnimalFireStoreModel {
     @Exclude
     public DocumentReference documentReference;
     private String name;
+    private String userNotes;
     private String description;
     private Timestamp date;
     private String imageURI;
@@ -20,6 +19,7 @@ public class AnimalFireStoreModel {
     // To make sure the right spelling/casing is used when indexing documents directly.
     public static final String DOCUMENT_REFERENCE_FIELD ="documentReference";
     public static final String NAME_FIELD="name";
+    public static final String USER_NOTES_FIELD="userNotes";
     public static final String DESCRIPTION_FIELD="description";
     public static final String DATE_FIELD="date";
     public static final String IMAGE_URI_FIELD="imageURI";
@@ -33,6 +33,7 @@ public class AnimalFireStoreModel {
 
     public AnimalFireStoreModel(Animal animal) {
         this.name = animal.name;
+        this.userNotes = animal.userNotes;
         this.description = animal.description;
         this.date = animal.date;
         this.latitude = animal.latitude;
@@ -45,6 +46,14 @@ public class AnimalFireStoreModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUserNotes() {
+        return userNotes;
+    }
+
+    public void setUserNotes(String userNotes) {
+        this.userNotes = userNotes;
     }
 
     public String getDescription() {

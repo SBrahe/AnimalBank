@@ -24,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import dk.au.mad21spring.animalbank.Constants;
 
+import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.USER_NOTES_FIELD;
 import static dk.au.mad21spring.animalbank.Constants.ANIMAL_REF_INTENT_EXTRA;
 import static dk.au.mad21spring.animalbank.Constants.IMAGE_URL_INTENT_EXTRA;
 
@@ -32,6 +33,7 @@ public class InfoActivity extends AppCompatActivity {
     private static final String TAG = "InfoActivity";
 
     FirebaseFirestore db;
+    DocumentReference animalRef;
 
     private Button btnBack;
     private Button btnDelete;
@@ -66,7 +68,7 @@ public class InfoActivity extends AppCompatActivity {
         btnBack.setOnClickListener(v -> onBackPressed());
 
         //get doc ref from intent extras.
-        DocumentReference animalRef = db.document(getIntent().getStringExtra(Constants.ANIMAL_REF_INTENT_EXTRA));
+        animalRef = db.document(getIntent().getStringExtra(Constants.ANIMAL_REF_INTENT_EXTRA));
         btnDelete.setOnClickListener(v -> {
             AlertDialog dialog = new AlertDialog.Builder(this).setTitle(R.string.app_name).setTitle("Are you sure you want to delete this animal").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
@@ -102,6 +104,7 @@ public class InfoActivity extends AppCompatActivity {
                     txtSpottedNear.setText(animal.getLatitude() + ", " + animal.getLongitude());
                 }
                 txtWikiNotes.setText(animal.getDescription());
+                txtUserNotes.setText(animal.getUserNotes());
                 Glide.with(userImageView.getContext()).load(animal.getImageURI()).into(userImageView);
 
                 userImageView.setOnClickListener(v -> {
@@ -117,17 +120,13 @@ public class InfoActivity extends AppCompatActivity {
 
     }
 
-
-    // onBackPressed should not be overridden since the info view can be accessed both from the map and the list view.
-    // The default back functionality can handle this.
-
-    //go to list when back button is pressed
-    //@Override
-    //public void onBackPressed() {
-    //    super.onBackPressed();
-    //    startActivity(new Intent(InfoActivity.this, ListFragment.class));
-    //    finish();
-    //}
+    //save animal when back button is pressed
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        animalRef.update(USER_NOTES_FIELD, txtUserNotes.getText().toString());
+        finish();
+    }
 
 
 }
