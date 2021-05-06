@@ -57,4 +57,7 @@ dependencies {
 
     //For fetching location
     implementation "com.google.android.gms:play-services-location:15.0.1"
+
+    //Picasso
+    implementation 'com.squareup.picasso:picasso:2.71828'
 }

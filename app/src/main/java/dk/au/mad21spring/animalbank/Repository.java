@@ -75,8 +75,8 @@ public class Repository {
         DocumentReference animalRef = db.collection(ANIMAL_COLLECTION_NAME).document(); //create new animal document in firestore
         animalRef.set(toUpload);
         this.uploadImage(animal.image, imageUri -> {
-            animalRef.update("imageUri", imageUri.toString());
-            Log.d(TAG, "uploadImage: uploaded image and update db, imageuri: " + imageUri);
+            animalRef.update("imageURI", imageUri.toString());
+            Log.d(TAG, "uploadImage: uploaded image and update db, imageURI: " + imageUri);
         });
         this.trySetWikiInfo(animal.name, animalRef, (e) -> {
         });

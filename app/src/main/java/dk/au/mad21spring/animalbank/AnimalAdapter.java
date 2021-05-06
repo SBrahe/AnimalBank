@@ -1,6 +1,5 @@
 package dk.au.mad21spring.animalbank;
 
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,11 +9,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Calendar;
+
 
 public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder>{
 
@@ -33,7 +31,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
 
     @Override
     public AnimalAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,int viewType){
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_list, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.animal_item, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
@@ -42,6 +40,9 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.animalNameText.setText(animals.get(position).getName());
         holder.spottedDateText.setText(animals.get(position).getDate().toString());
+        Picasso.get()
+                .load(animals.get(position).getImageURI())
+                .into(holder.animalImage);
     }
 
     @Override
@@ -57,12 +58,14 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
 
         public TextView animalNameText;
         public TextView spottedDateText;
+        public ImageView animalImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             animalNameText = itemView.findViewById(R.id.animalNameText);
             spottedDateText = itemView.findViewById(R.id.spottedDateText);
+            animalImage = itemView.findViewById(R.id.animalImage);
 
             itemView.setOnClickListener(this);
         }

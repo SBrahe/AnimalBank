@@ -1,5 +1,6 @@
 package dk.au.mad21spring.animalbank;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -42,15 +43,17 @@ public class ListFragment extends Fragment implements IAnimalListActionListener{
         // Inflate the layout for this fragment
 
         view = inflater.inflate(R.layout.fragment_list, container, false);
-        this.recyclerView = view.findViewById(R.id.recycler_view);
-        this.layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
-        this.recyclerView.setLayoutManager(layoutManager);
-        this.setupFirebaseListener();
+        recyclerView = view.findViewById(R.id.recycler_view);
+        layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+        recyclerView.setLayoutManager(layoutManager);
+        animals = new ArrayList<>();
+        setupFirebaseListener();
         return view;
+
     }
 
     private void setupFirebaseListener() {
-        db.collection("animals")/*.orderBy("date", Query.Direction.DESCENDING)*/.get()
+        db.collection("animals").orderBy("date", Query.Direction.DESCENDING).get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -79,6 +82,7 @@ public class ListFragment extends Fragment implements IAnimalListActionListener{
 
     @Override
     public void onAnimalPressed(AnimalFireStoreModel animal) {
-
+        Intent ListIntent = new Intent(getActivity().getApplicationContext(),InfoActivity.class);
+        startActivity(ListIntent);
     }
 }

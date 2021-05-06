@@ -3,7 +3,6 @@ package dk.au.mad21spring.animalbank;
 import android.graphics.Bitmap;
 import android.location.Location;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.Timestamp;
 
 import java.util.Date;
