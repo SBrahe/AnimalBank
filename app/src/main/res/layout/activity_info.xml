@@ -7,7 +7,7 @@
     tools:context=".InfoActivity">
 
     <ImageView
-        android:id="@+id/userImage"
+        android:id="@+id/userImageView"
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:layout_marginStart="20dp"
@@ -26,7 +26,7 @@
         android:layout_marginTop="30dp"
         android:text="@string/animal_name"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/userImage"
+        app:layout_constraintStart_toEndOf="@+id/userImageView"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -38,7 +38,7 @@
         android:layout_marginTop="20dp"
         android:text="@string/spotted_date"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/userImage"
+        app:layout_constraintStart_toEndOf="@+id/userImageView"
         app:layout_constraintTop_toBottomOf="@+id/animalNameText" />
 
     <TextView
@@ -49,7 +49,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="5dp"
         android:text="@string/date_placeholder"
-        app:layout_constraintStart_toEndOf="@+id/userImage"
+        app:layout_constraintStart_toEndOf="@+id/userImageView"
         app:layout_constraintTop_toBottomOf="@+id/spottedDateTitleText" />
 
     <TextView
@@ -61,7 +61,7 @@
         android:layout_marginTop="20dp"
         android:text="@string/spotted_location"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/userImage"
+        app:layout_constraintStart_toEndOf="@+id/userImageView"
         app:layout_constraintTop_toBottomOf="@+id/spottedDateText" />
 
     <TextView
@@ -74,7 +74,7 @@
         android:text="@string/user_notes"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userImage" />
+        app:layout_constraintTop_toBottomOf="@+id/userImageView" />
 
     <TextView
         android:id="@+id/wikiNotesTitleText"
@@ -116,7 +116,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="5dp"
         android:text="@string/location_placeholder"
-        app:layout_constraintStart_toEndOf="@+id/userImage"
+        app:layout_constraintStart_toEndOf="@+id/userImageView"
         app:layout_constraintTop_toBottomOf="@+id/spottedLocationTitleText" />
 
     <TextView
