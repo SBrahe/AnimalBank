@@ -25,6 +25,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import static dk.au.mad21spring.animalbank.Constants.ANIMAL_REF_INTENT_EXTRA;
+
 
 public class ListFragment extends Fragment implements IAnimalListActionListener{
 
@@ -61,6 +63,7 @@ public class ListFragment extends Fragment implements IAnimalListActionListener{
                         List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                         for(DocumentSnapshot documentSnapshot:list){
                             AnimalFireStoreModel animal = documentSnapshot.toObject(AnimalFireStoreModel.class);
+                            animal.documentReference = documentSnapshot.getReference();
                             animals.add(animal);
                         }
                         if(animals.size() > 0){
@@ -90,5 +93,8 @@ public class ListFragment extends Fragment implements IAnimalListActionListener{
         Intent ListIntent = new Intent(getActivity().getApplicationContext(),InfoActivity.class);
         ListIntent.putExtra(Constants.ANIMAL_REF_INTENT_EXTRA,path);
         startActivity(ListIntent);*/
+        Intent intent = new Intent(getActivity(), InfoActivity.class);
+        intent.putExtra(ANIMAL_REF_INTENT_EXTRA, animal.documentReference.getPath()); //pass animal path to info activity
+        startActivity(intent);
     }
 }
