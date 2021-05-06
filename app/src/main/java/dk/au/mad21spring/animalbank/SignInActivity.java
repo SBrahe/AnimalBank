@@ -74,7 +74,7 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     public void goToCameraActivity(){
-        Intent intent = new Intent(this,CameraActivity.class);
+        Intent intent = new Intent(this,MainActivity.class);
         startActivity(intent);
         finish();
     }
