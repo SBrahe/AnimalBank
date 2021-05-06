@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AnimalBank</string>
+    <string name="action_sign_in">Log ind eller opret bruger</string>
+    <string name="animal_name">Navn på dyret</string>
+    <string name="spotted_date">Set:</string>
+    <string name="spotted_location">Set i nærheden af:</string>
+    <string name="wiki_text">Info fra Wikipedia:</string>
+    <string name="user_notes">Mine noter:</string>
+    <string name="location_placeholder">Location placeholder</string>
+    <string name="date_placeholder">Date placeholder</string>
+    <string name="back">Tilbage</string>
+    <string name="delete">Slet</string>
+    <string name="add">Tilføj</string>
+    <string name="capture">Tag Billede</string>
+    <string name="input_animal_name" translatable="false">Navn på dyret:</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="animalNameTool">Animal Name</string>
+    <string name="spottedOnText">Set:</string>
+    <string name="spottedDate">xx-xx-xxxx</string>
+</resources>
