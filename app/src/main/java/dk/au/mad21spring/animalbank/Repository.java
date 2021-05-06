@@ -1,6 +1,7 @@
 package dk.au.mad21spring.animalbank;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
@@ -9,12 +10,15 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -40,9 +44,11 @@ import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.DESCRIPTION_FIELD;
 import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.IMAGE_URI_FIELD;
 import static dk.au.mad21spring.animalbank.Constants.ANIMAL_COLLECTION_NAME;
+import static dk.au.mad21spring.animalbank.Constants.IMAGE_URL_INTENT_EXTRA;
 
 //this code was heavily influenced by this android developer tutorial: https://developer.android.com/codelabs/android-training-livedata-viewmodel
 
@@ -102,10 +108,28 @@ public class Repository {
         });
     }
 
-    public void getAnimal(String ID, BiConsumer<DocumentSnapshot, Animal> onSuccess, Consumer<Error> onError) {
+    public LiveData<AnimalFireStoreModel> getAnimal(String animalFireStorePath) {
+        MutableLiveData<AnimalFireStoreModel> animalLiveData = new MutableLiveData<AnimalFireStoreModel>();
+        animalLiveData.setValue(new AnimalFireStoreModel());
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference animalRef = db.document(animalFireStorePath);
+        animalRef.addSnapshotListener(executorService, (snapshot, e) -> {
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e);
+                return;
+            }
+            if (snapshot != null && snapshot.exists()) {
+                AnimalFireStoreModel animal = snapshot.toObject(AnimalFireStoreModel.class);
+                animal.documentReference = snapshot.getReference();
+                animalLiveData.setValue(animal);
+            } else {
+                Log.d(TAG, "Current data: null");
+            }
+        });
+        return animalLiveData;
     }
 
-    public void updateAnimal(Animal animal, BiConsumer<DocumentSnapshot, Animal> onSuccess, Consumer<Error> onError) {
+    public void updateAnimal(AnimalFireStoreModel animal, Consumer<DocumentSnapshot> onSuccess, Consumer<Error> onError) {
 
     }
 
