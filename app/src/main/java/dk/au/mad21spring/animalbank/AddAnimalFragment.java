@@ -2,11 +2,7 @@ package dk.au.mad21spring.animalbank;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,25 +10,10 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.security.auth.callback.Callback;
 
 import static dk.au.mad21spring.animalbank.Constants.ANIMAL_REF_INTENT_EXTRA;
 
@@ -44,7 +25,6 @@ public class AddAnimalFragment extends Fragment {
     Repository repo;
     private AddAnimalFragmentListener listener;
     private EditText txtEditAnimalName;
-
 
 
     @Override
@@ -70,18 +50,24 @@ public class AddAnimalFragment extends Fragment {
     }
 
     public void onEnterPressed() {
-        CameraParentFragment cameraParentFragment = (CameraParentFragment)this.getParentFragment();
+        CameraParentFragment cameraParentFragment = (CameraParentFragment) this.getParentFragment();
         Animal animal = new Animal();
+
+        //check if location is null
+        if (cameraParentFragment.getLocationAtCapture() != null) {
+            animal.latitude = cameraParentFragment.getLocationAtCapture().getLatitude();
+            animal.longitude = cameraParentFragment.getLocationAtCapture().getLongitude();
+        }
+
         animal.name = txtEditAnimalName.getText().toString();
-        animal.latitude = cameraParentFragment.getLocationAtCapture().getLatitude();
-        animal.longitude = cameraParentFragment.getLocationAtCapture().getLongitude();
         animal.date = Timestamp.now();
         animal.image = cameraParentFragment.getCapturedImage();
-        repo.insertAnimal(animal,(documentReference)->{
+        repo.insertAnimal(animal, (documentReference) -> {
             Intent intent = new Intent(getActivity(), InfoActivity.class);
             intent.putExtra(ANIMAL_REF_INTENT_EXTRA, documentReference.getPath()); //pass animal path to info activity
             startActivity(intent);
-        },(error)->{});
+        }, (error) -> {
+        });
     }
 
     public interface AddAnimalFragmentListener {
