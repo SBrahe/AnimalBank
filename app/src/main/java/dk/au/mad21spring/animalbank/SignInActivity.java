@@ -47,7 +47,6 @@ public class SignInActivity extends AppCompatActivity {
         }
         if (auth.getCurrentUser() != null) {
             repo.setUser(auth.getCurrentUser());
-            repo.setUid(auth.getCurrentUser().getUid());
             goToMainApp();
         } else {
 
