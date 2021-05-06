@@ -19,6 +19,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -82,7 +83,12 @@ public class ListFragment extends Fragment implements IAnimalListActionListener{
 
     @Override
     public void onAnimalPressed(AnimalFireStoreModel animal) {
+        /*DocumentSnapshot documentSnapshot;
+        animal = documentSnapshot.toObject(AnimalFireStoreModel.class);
+        String id = documentSnapshot.getId();
+        String path = documentSnapshot.getReference().getPath();
         Intent ListIntent = new Intent(getActivity().getApplicationContext(),InfoActivity.class);
-        startActivity(ListIntent);
+        ListIntent.putExtra(Constants.ANIMAL_REF_INTENT_EXTRA,path);
+        startActivity(ListIntent);*/
     }
 }

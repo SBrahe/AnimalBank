@@ -39,7 +39,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.animalNameText.setText(animals.get(position).getName());
-        holder.spottedDateText.setText(animals.get(position).getDate().toString());
+        holder.spottedDateText.setText(animals.get(position).getDate().toDate().toString());
         Picasso.get()
                 .load(animals.get(position).getImageURI())
                 .into(holder.animalImage);
@@ -74,7 +74,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
         @Override
         public void onClick(View view) {
             int position = getBindingAdapterPosition();
-            if(position!= RecyclerView.NO_POSITION){
+            if(position!= RecyclerView.NO_POSITION && listener!=null){
                 AnimalFireStoreModel animalClicked = animals.get(position);
                 listener.onAnimalPressed(animalClicked);
             }

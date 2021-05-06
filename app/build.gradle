@@ -55,6 +55,7 @@ dependencies {
     implementation "androidx.camera:camera-view:1.0.0-alpha14"
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 
     //For fetching location
     implementation "com.google.android.gms:play-services-location:15.0.1"
