@@ -65,8 +65,7 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
 
         //Make sure the UI starts out in the correct state:
         this.goToCaptureImageMode();
-        requestAllPermissions();
-
+        requestAllPermissions(); //Camera gets init in onRequestPermissionsResult
 
         //For retrieving location data:
         this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());

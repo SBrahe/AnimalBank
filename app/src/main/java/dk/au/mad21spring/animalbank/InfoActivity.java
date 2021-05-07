@@ -25,6 +25,8 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import java.text.SimpleDateFormat;
+
 import dk.au.mad21spring.animalbank.Constants;
 import dk.au.mad21spring.animalbank.viewmodels.SingleAnimalViewModel;
 import dk.au.mad21spring.animalbank.viewmodels.SingleAnimalViewModelFactory;
@@ -91,7 +93,7 @@ public class InfoActivity extends AppCompatActivity {
 
     private void refreshUI(AnimalFireStoreModel animal){
         txtAnimalName.setText(animal.getName());
-        txtSpottedDate.setText(animal.getDate().toDate().toString());
+        txtSpottedDate.setText(animal.getDateShortString());
         String near = Repository.getAnimalRepository(getApplicationContext()).getLocalityFromLatLong(animal.getLatitude(), animal.getLongitude());
         if (near != null) {
             txtSpottedNear.setText(near);

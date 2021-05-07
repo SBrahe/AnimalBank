@@ -6,6 +6,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Exclude;
 
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 
 
 public class AnimalFireStoreModel {
@@ -98,5 +99,10 @@ public class AnimalFireStoreModel {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getDateShortString(){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        return format.format(this.getDate().toDate());
     }
 }

@@ -39,7 +39,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.animalNameText.setText(animals.get(position).getName());
-        holder.spottedDateText.setText(animals.get(position).getDate().toDate().toString());
+        holder.spottedDateText.setText(animals.get(position).getDateShortString());
         Picasso.get()
                 .load(animals.get(position).getImageURI())
                 .into(holder.animalImage);
