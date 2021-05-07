@@ -67,12 +67,7 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
         this.goToCaptureImageMode();
         requestAllPermissions();
 
-        //Init camera
-        if (hasCameraPermission()) {
-            this.startCamera();
-        } else {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
-        }
+
         //For retrieving location data:
         this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         //Init back stack handling.
@@ -124,7 +119,7 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
     /*----------------------------------- PERMISSIONS ----------------------------------------*/
     /*----------------------------------------------------------------------------------------*/
 
-    void requestAllPermissions(){
+    void requestAllPermissions() {
         requestPermissions(REQUIRED_PERMISSIONS, ALL_PERMISSIONS_REQUEST_CODE);
     }
 
@@ -139,10 +134,10 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
     //Will be called when user has been asked for permissions.
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
-            if (hasCameraPermission()) {
-                this.startCamera();
-            }
+
+        if (hasCameraPermission()) {
+            this.startCamera();
+
         }
     }
 
