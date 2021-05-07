@@ -179,7 +179,7 @@ public class Repository {
 
     public void deleteAnimal(String animalDocumentId, Runnable onSuccess, Consumer<Exception> onError) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(ANIMAL_COLLECTION_NAME).document(animalDocumentId).delete().addOnSuccessListener((a)->{onSuccess.run();}).addOnFailureListener((e)->{onError.accept(e);});
+        db.document(animalDocumentId).delete().addOnSuccessListener((a)->{onSuccess.run();}).addOnFailureListener((e)->{onError.accept(e);});
     }
 
 
