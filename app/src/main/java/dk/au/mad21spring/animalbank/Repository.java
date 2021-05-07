@@ -130,11 +130,18 @@ public class Repository {
         MutableLiveData<ArrayList<AnimalFireStoreModel>> animalsLiveData = new MutableLiveData<ArrayList<AnimalFireStoreModel>>();
         ArrayList<AnimalFireStoreModel> animalsList = new ArrayList<AnimalFireStoreModel>();
         animalsLiveData.setValue(animalsList);
-        this.getAllAnimalsAsync((animalFireStoreModel)->{
-            ArrayList<AnimalFireStoreModel> updatedList =  animalsLiveData.getValue();
-            updatedList.add(animalFireStoreModel);
-            animalsLiveData.setValue(updatedList);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(user.getUid()).addSnapshotListener(executorService, (snapshot, e)->{
+                //If anything in the collection changes. Clear list and fetch again.
+                ArrayList<AnimalFireStoreModel> updatedList =  animalsLiveData.getValue();
+                updatedList.clear();
+            this.getAllAnimalsAsync((animalFireStoreModel)->{
+                updatedList.add(animalFireStoreModel);
+                animalsLiveData.setValue(updatedList);
+            });
         });
+
         return animalsLiveData;
     }
 
