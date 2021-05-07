@@ -40,6 +40,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import static dk.au.mad21spring.animalbank.Constants.ALL_PERMISSIONS_REQUEST_CODE;
 import static dk.au.mad21spring.animalbank.Constants.CAMERA_PERMISSION_REQUEST_CODE;
 import static dk.au.mad21spring.animalbank.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 
@@ -61,10 +62,10 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
         View view = inflater.inflate(R.layout.fragment_camera_parent, container, false);
         this.captureView = view.findViewById(R.id.captureView);
         this.viewFinder = view.findViewById(R.id.viewFinder);
-        requestAllPermissions();
 
         //Make sure the UI starts out in the correct state:
         this.goToCaptureImageMode();
+        requestAllPermissions();
 
         //Init camera
         if (hasCameraPermission()) {
@@ -124,7 +125,7 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
     /*----------------------------------------------------------------------------------------*/
 
     void requestAllPermissions(){
-        requestPermissions(REQUIRED_PERMISSIONS, CAMERA_PERMISSION_REQUEST_CODE);
+        requestPermissions(REQUIRED_PERMISSIONS, ALL_PERMISSIONS_REQUEST_CODE);
     }
 
     //Checks whether permissions has already been granted by user.
