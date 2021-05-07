@@ -56,7 +56,6 @@ import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.LATITUDE_FIELD;
 import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.LONGITUDE_FIELD;
 import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.NAME_FIELD;
 import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.USER_NOTES_FIELD;
-import static dk.au.mad21spring.animalbank.Constants.ANIMAL_COLLECTION_NAME;
 import static dk.au.mad21spring.animalbank.Constants.IMAGE_URL_INTENT_EXTRA;
 
 //this code was heavily influenced by this android developer tutorial: https://developer.android.com/codelabs/android-training-livedata-viewmodel
