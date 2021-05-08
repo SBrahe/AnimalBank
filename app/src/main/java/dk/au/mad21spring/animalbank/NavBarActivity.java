@@ -24,7 +24,7 @@ public class NavBarActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         BottomNavigationView bottom_navbar = findViewById(R.id.bottom_navbar);
-        bottom_navbar.setOnNavigationItemSelectedListener(navbarListenser);
+        bottom_navbar.setOnNavigationItemSelectedListener(navbarListener);
         //The following makes sure that the app does not revert to the camera view when device is rotated.
         if (getIntent().getBooleanExtra(STARTUP_INTENT_EXTRA,false) == true)
         {
@@ -34,7 +34,7 @@ public class NavBarActivity extends AppCompatActivity {
         }
     }
 
-    private BottomNavigationView.OnNavigationItemSelectedListener navbarListenser =
+    private BottomNavigationView.OnNavigationItemSelectedListener navbarListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
