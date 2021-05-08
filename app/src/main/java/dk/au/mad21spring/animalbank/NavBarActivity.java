@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
@@ -29,7 +30,8 @@ public class NavBarActivity extends AppCompatActivity {
         if (getIntent().getBooleanExtra(STARTUP_INTENT_EXTRA,false) == true)
         {
             getIntent().removeExtra(STARTUP_INTENT_EXTRA);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                 new CameraParentFragment()).commit();
         }
     }
@@ -42,12 +44,15 @@ public class NavBarActivity extends AppCompatActivity {
 
                     switch (item.getItemId()){
                         case R.id.nav_camera:
+                            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                             selectedFragment = new CameraParentFragment();
                             break;
                         case R.id.nav_location:
+                            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                             selectedFragment = new MapsFragment();
                             break;
                         case R.id.nav_list:
+                            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                             selectedFragment = new ListFragment();
                             break;
                     }

@@ -76,6 +76,7 @@ public class SignInActivity extends AppCompatActivity {
         if (requestCode == REQUEST_LOGIN) {
 
             if (resultCode == RESULT_OK) {
+                repo.setUser(auth.getCurrentUser());
                 Toast.makeText(this, "Logged in!", Toast.LENGTH_SHORT).show();
                 goToMainApp();
             }
