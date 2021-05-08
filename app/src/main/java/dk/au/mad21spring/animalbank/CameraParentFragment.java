@@ -130,13 +130,27 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
         return false;
     }
 
+    boolean hasLocationPermission() {
+        boolean FINE_LOCATION_PERMISSION = (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED);
+        boolean COARSE_LOCATION_PERMISSION = (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED);
+        if (FINE_LOCATION_PERMISSION && COARSE_LOCATION_PERMISSION) {
+            return true;
+        }
+        return false;
+    }
+
+
     //Will be called when user has been asked for permissions.
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        if (hasCameraPermission()) {
+        if (requestCode == ALL_PERMISSIONS_REQUEST_CODE && hasCameraPermission()) {
+            //Happens at startup
             this.startCamera();
-
+        }
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE && hasLocationPermission()) {
+            getLocation(location -> {
+                this.locationAtCapture = location;
+            });
         }
     }
 
@@ -152,10 +166,10 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
 
     @SuppressLint("MissingPermission")
     private void getLocation(OnSuccessListener<Location> listener) {
-        if (hasCameraPermission()) {
+        if (hasLocationPermission()) {
             this.fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), listener);
         } else {
-            ActivityCompat.requestPermissions(getActivity(), REQUIRED_PERMISSIONS, LOCATION_PERMISSION_REQUEST_CODE);
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
 

@@ -2,15 +2,24 @@ package dk.au.mad21spring.animalbank;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -18,30 +27,43 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.HashMap;
 
+import static dk.au.mad21spring.animalbank.Constants.ALL_PERMISSIONS_REQUEST_CODE;
 import static dk.au.mad21spring.animalbank.Constants.ANIMAL_REF_INTENT_EXTRA;
+import static dk.au.mad21spring.animalbank.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 
 public class MapsFragment extends Fragment {
 
     private Repository repo;
-
+    private FusedLocationProviderClient fusedLocationClient;
     // Inspired by https://stackoverflow.com/questions/38626685/google-maps-marker-how-saved-data
     private HashMap<Marker, DocumentReference> markerReferences;
-
     //Save ref in order to refresh manually.
     private GoogleMap map;
-
     private OnMapReadyCallback onMapReady = new OnMapReadyCallback() {
-
         @Override
         public void onMapReady(GoogleMap googleMap) {
             map = googleMap;
-            populateMap(map);
+            populateMap();
+            moveToCurrentLocation();
         }
     };
+
+    void moveToCurrentLocation(){
+        getLocation(location -> {
+            moveCamera(location);
+        });
+    }
+
+    void moveCamera(Location location){
+        LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, 10);
+        map.moveCamera(update);
+    }
 
     @Nullable
     @Override
@@ -49,8 +71,8 @@ public class MapsFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         repo = Repository.getAnimalRepository(getActivity().getApplicationContext());
+        this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         markerReferences = new HashMap<Marker,DocumentReference>();
-
         return inflater.inflate(R.layout.fragment_maps, container, false);
     }
 
@@ -68,12 +90,12 @@ public class MapsFragment extends Fragment {
     public void onResume() {
         if(map!=null){
             map.clear();
-            populateMap(map);
+            populateMap();
         }
         super.onResume();
     }
 
-    private void populateMap(GoogleMap googleMap){
+    private void populateMap(){
         repo.getAllAnimalsAsync((animalFireStoreModel) -> {
             addAnimalToMap(animalFireStoreModel, map);
         });
@@ -92,4 +114,38 @@ public class MapsFragment extends Fragment {
         //Add marker/docref lookup which can be used to navigate to infoview when clicking markers.
         markerReferences.put(marker, animal.documentReference);
     }
+
+
+
+
+    boolean hasLocationPermission() {
+        boolean FINE_LOCATION_PERMISSION = (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED);
+        boolean COARSE_LOCATION_PERMISSION = (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED);
+        if (FINE_LOCATION_PERMISSION && COARSE_LOCATION_PERMISSION) {
+            return true;
+        }
+        return false;
+    }
+
+    @SuppressLint("MissingPermission")
+    private void getLocation(OnSuccessListener<Location> listener) {
+        if (hasLocationPermission()) {
+            this.fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), listener);
+        } else {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+
+
+    //Will be called when user has been asked for permissions.
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE && hasLocationPermission()) {
+            getLocation(location -> {
+                moveCamera(location);
+            });
+        }
+    }
+
 }
