@@ -1,4 +1,4 @@
-package dk.au.mad21spring.animalbank;
+package dk.au.mad21spring.animalbank.CameraView;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +14,11 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import dk.au.mad21spring.animalbank.Domain.Animal;
+import dk.au.mad21spring.animalbank.InfoView.InfoActivity;
+import dk.au.mad21spring.animalbank.R;
+import dk.au.mad21spring.animalbank.DataAccess.Repository;
 
 import static dk.au.mad21spring.animalbank.Constants.ANIMAL_REF_INTENT_EXTRA;
 

@@ -1,4 +1,4 @@
-package dk.au.mad21spring.animalbank;
+package dk.au.mad21spring.animalbank.Domain;
 
 import android.graphics.Bitmap;
 import android.location.Location;

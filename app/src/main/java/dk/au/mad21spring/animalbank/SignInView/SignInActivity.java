@@ -1,4 +1,4 @@
-package dk.au.mad21spring.animalbank;
+package dk.au.mad21spring.animalbank.SignInView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,10 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Arrays;
 import java.util.List;
+
+import dk.au.mad21spring.animalbank.DataAccess.Repository;
+import dk.au.mad21spring.animalbank.NavBarActivity;
+import dk.au.mad21spring.animalbank.R;
 
 //code inspired by lectures
 public class SignInActivity extends AppCompatActivity {

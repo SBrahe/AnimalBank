@@ -1,4 +1,4 @@
-package dk.au.mad21spring.animalbank;
+package dk.au.mad21spring.animalbank.CameraView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,8 +40,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import dk.au.mad21spring.animalbank.R;
+
 import static dk.au.mad21spring.animalbank.Constants.ALL_PERMISSIONS_REQUEST_CODE;
-import static dk.au.mad21spring.animalbank.Constants.CAMERA_PERMISSION_REQUEST_CODE;
 import static dk.au.mad21spring.animalbank.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 
 //Inspiration drawn from https://github.com/akhilbattula/android-camerax-java/blob/98593fbd93db214bb5551106f95e4fed348d42d5/app/src/main/java/com/akhil/cameraxjavademo/MainActivity.java#L149

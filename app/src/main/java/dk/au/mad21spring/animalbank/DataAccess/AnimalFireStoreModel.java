@@ -1,12 +1,13 @@
-package dk.au.mad21spring.animalbank;
+package dk.au.mad21spring.animalbank.DataAccess;
 
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Exclude;
 
-import java.sql.Time;
 import java.text.SimpleDateFormat;
+
+import dk.au.mad21spring.animalbank.Domain.Animal;
 
 
 public class AnimalFireStoreModel {

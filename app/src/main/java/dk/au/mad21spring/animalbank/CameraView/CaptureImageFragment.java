@@ -1,15 +1,15 @@
-package dk.au.mad21spring.animalbank;
+package dk.au.mad21spring.animalbank.CameraView;
 
-import android.content.Context;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import dk.au.mad21spring.animalbank.R;
 
 public class CaptureImageFragment extends Fragment {
 

@@ -1,7 +1,6 @@
-package dk.au.mad21spring.animalbank;
+package dk.au.mad21spring.animalbank.DataAccess;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
@@ -20,8 +19,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -45,18 +42,17 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import static com.firebase.ui.auth.AuthUI.getApplicationContext;
-import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.DATE_FIELD;
-import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.DESCRIPTION_FIELD;
-import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.IMAGE_URI_FIELD;
-import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.LATITUDE_FIELD;
-import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.LONGITUDE_FIELD;
-import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.NAME_FIELD;
-import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.USER_NOTES_FIELD;
-import static dk.au.mad21spring.animalbank.Constants.IMAGE_URL_INTENT_EXTRA;
+import dk.au.mad21spring.animalbank.Domain.Animal;
+
+import static dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel.DATE_FIELD;
+import static dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel.DESCRIPTION_FIELD;
+import static dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel.IMAGE_URI_FIELD;
+import static dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel.LATITUDE_FIELD;
+import static dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel.LONGITUDE_FIELD;
+import static dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel.NAME_FIELD;
+import static dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel.USER_NOTES_FIELD;
 
 //this code was heavily influenced by this android developer tutorial: https://developer.android.com/codelabs/android-training-livedata-viewmodel
 

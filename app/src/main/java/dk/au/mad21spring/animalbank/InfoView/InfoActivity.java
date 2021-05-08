@@ -1,38 +1,26 @@
-package dk.au.mad21spring.animalbank;
+package dk.au.mad21spring.animalbank.InfoView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-
-import java.text.SimpleDateFormat;
 
 import dk.au.mad21spring.animalbank.Constants;
+import dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel;
+import dk.au.mad21spring.animalbank.DataAccess.Repository;
+import dk.au.mad21spring.animalbank.R;
 import dk.au.mad21spring.animalbank.viewmodels.SingleAnimalViewModel;
 import dk.au.mad21spring.animalbank.viewmodels.SingleAnimalViewModelFactory;
 
-import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.USER_NOTES_FIELD;
-import static dk.au.mad21spring.animalbank.Constants.ANIMAL_REF_INTENT_EXTRA;
 import static dk.au.mad21spring.animalbank.Constants.IMAGE_URL_INTENT_EXTRA;
 
 public class InfoActivity extends AppCompatActivity {

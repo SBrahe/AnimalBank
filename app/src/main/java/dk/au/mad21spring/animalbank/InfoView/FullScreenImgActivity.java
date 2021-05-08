@@ -1,4 +1,4 @@
-package dk.au.mad21spring.animalbank;
+package dk.au.mad21spring.animalbank.InfoView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,6 +7,9 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentReference;
+
+import dk.au.mad21spring.animalbank.Constants;
+import dk.au.mad21spring.animalbank.R;
 
 public class FullScreenImgActivity extends AppCompatActivity {
 

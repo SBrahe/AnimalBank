@@ -1,4 +1,4 @@
-package dk.au.mad21spring.animalbank;
+package dk.au.mad21spring.animalbank.MapView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -32,7 +31,11 @@ import com.google.firebase.firestore.DocumentReference;
 
 import java.util.HashMap;
 
-import static dk.au.mad21spring.animalbank.Constants.ALL_PERMISSIONS_REQUEST_CODE;
+import dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel;
+import dk.au.mad21spring.animalbank.DataAccess.Repository;
+import dk.au.mad21spring.animalbank.InfoView.InfoActivity;
+import dk.au.mad21spring.animalbank.R;
+
 import static dk.au.mad21spring.animalbank.Constants.ANIMAL_REF_INTENT_EXTRA;
 import static dk.au.mad21spring.animalbank.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 

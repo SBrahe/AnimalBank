@@ -5,12 +5,10 @@ import android.app.Application;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.firebase.firestore.DocumentSnapshot;
-
 import java.util.function.Consumer;
 
-import dk.au.mad21spring.animalbank.AnimalFireStoreModel;
-import dk.au.mad21spring.animalbank.Repository;
+import dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel;
+import dk.au.mad21spring.animalbank.DataAccess.Repository;
 
 public class SingleAnimalViewModel extends ViewModel {
     private Repository repo;
