@@ -7,4 +7,6 @@ public class Constants {
 
     public static final String ANIMAL_REF_INTENT_EXTRA = "animalRef";
     public static final String IMAGE_URL_INTENT_EXTRA = "ImageUrl";
+    public static final String STARTUP_INTENT_EXTRA = "Startup";
+
 }

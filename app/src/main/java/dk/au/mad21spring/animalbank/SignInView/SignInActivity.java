@@ -19,6 +19,8 @@ import dk.au.mad21spring.animalbank.DataAccess.Repository;
 import dk.au.mad21spring.animalbank.NavBarActivity;
 import dk.au.mad21spring.animalbank.R;
 
+import static dk.au.mad21spring.animalbank.Constants.STARTUP_INTENT_EXTRA;
+
 //code inspired by lectures
 public class SignInActivity extends AppCompatActivity {
 
@@ -82,6 +84,7 @@ public class SignInActivity extends AppCompatActivity {
 
     public void goToMainApp() {
         Intent intent = new Intent(this, NavBarActivity.class);
+        intent.putExtra(STARTUP_INTENT_EXTRA,true);
         startActivity(intent);
         finish();
     }
