@@ -1,4 +1,4 @@
-package dk.au.mad21spring.animalbank;
+package dk.au.mad21spring.animalbank.ListView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +13,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import dk.au.mad21spring.animalbank.AnimalFireStoreModel;
-import dk.au.mad21spring.animalbank.IAnimalListActionListener;
+import dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel;
+import dk.au.mad21spring.animalbank.R;
 
 
 public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder>{
@@ -23,7 +23,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
     private ArrayList<AnimalFireStoreModel> animals;
     private IAnimalListActionListener listener;
 
-    public AnimalAdapter(ArrayList<AnimalFireStoreModel> animalList, IAnimalListActionListener listener){
+    public AnimalAdapter(ArrayList<AnimalFireStoreModel> animalList,IAnimalListActionListener listener){
             animals=animalList;
             this.listener=listener;
     }
@@ -42,7 +42,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.animalNameText.setText(animals.get(position).getName());
-        holder.spottedDateText.setText(animals.get(position).getDate().toDate().toString());
+        holder.spottedDateText.setText(animals.get(position).getDateShortString());
         Picasso.get()
                 .load(animals.get(position).getImageURI())
                 .into(holder.animalImage);

@@ -13,12 +13,12 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/square"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AnimalBank">
-        <activity android:name=".FullScreenImgActivity"></activity>
+        <activity android:name=".InfoView.FullScreenImgActivity"></activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -30,15 +30,15 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-        <activity android:name=".SignInActivity">
+        <activity android:name=".SignInView.SignInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".InfoActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".InfoView.InfoActivity" />
+        <activity android:name=".NavBarActivity" />
     </application>
 
 </manifest>

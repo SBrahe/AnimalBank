@@ -1,4 +1,4 @@
-package dk.au.mad21spring.animalbank;
+package dk.au.mad21spring.animalbank.Domain;
 
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -9,6 +9,7 @@ import java.util.Date;
 
 public class Animal {
     public String name;
+    public String userNotes;
     public String description;
     public Timestamp date;
     public Bitmap image;

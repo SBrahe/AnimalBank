@@ -1,21 +1,25 @@
-package dk.au.mad21spring.animalbank;
+package dk.au.mad21spring.animalbank.DataAccess;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -31,31 +35,37 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.DESCRIPTION_FIELD;
-import static dk.au.mad21spring.animalbank.AnimalFireStoreModel.IMAGE_URI_FIELD;
-import static dk.au.mad21spring.animalbank.Constants.ANIMAL_COLLECTION_NAME;
+import dk.au.mad21spring.animalbank.Domain.Animal;
 
-//this code was heavily influenced by this android developer tutorial: https://developer.android.com/codelabs/android-training-livedata-viewmodel
+import static dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel.DATE_FIELD;
+import static dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel.DESCRIPTION_FIELD;
+import static dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel.IMAGE_URI_FIELD;
+import static dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel.LATITUDE_FIELD;
+import static dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel.LONGITUDE_FIELD;
+import static dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel.NAME_FIELD;
+import static dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel.USER_NOTES_FIELD;
+
+//this code was influenced by this android developer tutorial: https://developer.android.com/codelabs/android-training-livedata-viewmodel
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class Repository {
 
     private static final String TAG = "Repository";
-    public static Repository instance = null;
+    public static Repository instance;
     ExecutorService executorService;
     FirebaseStorage storage;
-    //private final LiveData<List<Animal>> animals;
     private RequestQueue queue;
     private Context context;
+    FirebaseUser user;
 
     private Repository(Context context) {
         if (queue == null) {
@@ -75,12 +85,18 @@ public class Repository {
         return (instance);
     }
 
+    public void setUser(FirebaseUser user) {
+        this.user = user;
+    }
+
     //code inspired by https://firebase.google.com/docs/storage/android/upload-files
     public void insertAnimal(Animal animal, Consumer<DocumentReference> onSuccess, Consumer<Error> onError) {
         AnimalFireStoreModel toUpload = new AnimalFireStoreModel(animal);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference animalRef = db.collection(ANIMAL_COLLECTION_NAME).document(); //create new animal document in firestore
+        DocumentReference animalRef = db.collection(user.getUid()).document(); //create new animal document in firestore
+        onSuccess.accept(animalRef);
         animalRef.set(toUpload);
+        Log.d(TAG, "insertAnimal: attempting to upload image");
         this.uploadImage(animal.image, imageUri -> {
             animalRef.update(IMAGE_URI_FIELD, imageUri.toString());
             Log.d(TAG, "uploadImage: uploaded image and update db, imageuri: " + imageUri);
@@ -88,12 +104,14 @@ public class Repository {
         this.trySetWikiInfo(animal.name, animalRef, (e) -> {
         });
         //Refactor to Tasks.whenAllComplete()
+
     }
 
-    public void getAllAnimals(Consumer<AnimalFireStoreModel> doForEach){
+    //Async iteration over all animals in collection
+    public void getAllAnimalsAsync(Consumer<AnimalFireStoreModel> doForEach) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(ANIMAL_COLLECTION_NAME).get().onSuccessTask((snapshot)->{
-            snapshot.iterator().forEachRemaining((item)->{
+        db.collection(user.getUid()).get().onSuccessTask((snapshot) -> {
+            snapshot.iterator().forEachRemaining((item) -> {
                 AnimalFireStoreModel animal = item.toObject(AnimalFireStoreModel.class);
                 animal.documentReference = item.getReference();
                 doForEach.accept(animal);
@@ -102,20 +120,72 @@ public class Repository {
         });
     }
 
-    public void getAnimal(String ID, BiConsumer<DocumentSnapshot, Animal> onSuccess, Consumer<Error> onError) {
+    //To be used in ViewModel
+    public LiveData<ArrayList<AnimalFireStoreModel>> getAllAnimals() {
+        MutableLiveData<ArrayList<AnimalFireStoreModel>> animalsLiveData = new MutableLiveData<ArrayList<AnimalFireStoreModel>>();
+        ArrayList<AnimalFireStoreModel> animalsList = new ArrayList<AnimalFireStoreModel>();
+        animalsLiveData.setValue(animalsList);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(user.getUid()).addSnapshotListener(executorService, (snapshot, e) -> {
+            //If anything in the collection changes. Clear list and fetch again.
+            ArrayList<AnimalFireStoreModel> updatedList = animalsLiveData.getValue();
+            updatedList.clear();
+            this.getAllAnimalsAsync((animalFireStoreModel) -> {
+                updatedList.add(animalFireStoreModel);
+                animalsLiveData.setValue(updatedList);
+            });
+        });
+
+        return animalsLiveData;
     }
 
-    public void updateAnimal(Animal animal, BiConsumer<DocumentSnapshot, Animal> onSuccess, Consumer<Error> onError) {
+    public LiveData<AnimalFireStoreModel> getAnimal(String animalFireStorePath) {
+        MutableLiveData<AnimalFireStoreModel> animalLiveData = new MutableLiveData<AnimalFireStoreModel>();
+        animalLiveData.setValue(new AnimalFireStoreModel());
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference animalRef = db.document(animalFireStorePath);
+        animalRef.addSnapshotListener(executorService, (snapshot, e) -> {
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e);
+                return;
+            }
+            if (snapshot != null && snapshot.exists()) {
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(() -> {
+                    AnimalFireStoreModel animal = snapshot.toObject(AnimalFireStoreModel.class);
+                    animal.documentReference = snapshot.getReference();
+                    animalLiveData.setValue(animal);
+                });
 
+            } else {
+                Log.d(TAG, "Current data: null");
+            }
+        });
+        return animalLiveData;
+    }
+
+    public void updateAnimal(AnimalFireStoreModel animal, Consumer<DocumentSnapshot> onSuccess, Consumer<Error> onError) {
+        animal.documentReference.update(NAME_FIELD, animal.getName());
+        animal.documentReference.update(USER_NOTES_FIELD, animal.getUserNotes());
+        animal.documentReference.update(DESCRIPTION_FIELD, animal.getDescription());
+        animal.documentReference.update(DATE_FIELD, animal.getDate());
+        animal.documentReference.update(IMAGE_URI_FIELD, animal.getImageURI());
+        animal.documentReference.update(LATITUDE_FIELD, animal.getLatitude());
+        animal.documentReference.update(LONGITUDE_FIELD, animal.getLongitude());
+        //refactor to Tasks.whenAllSuccess()
     }
 
     public void deleteAnimal(AnimalFireStoreModel animal, Runnable onSuccess, Consumer<Error> onError) {
-
     }
 
     public void deleteAnimal(String animalDocumentId, Runnable onSuccess, Consumer<Exception> onError) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(ANIMAL_COLLECTION_NAME).document(animalDocumentId).delete().addOnSuccessListener((a)->{onSuccess.run();}).addOnFailureListener((e)->{onError.accept(e);});
+        db.document(animalDocumentId).delete().addOnSuccessListener((a) -> {
+            onSuccess.run();
+        }).addOnFailureListener((e) -> {
+            onError.accept(e);
+        });
     }
 
 
@@ -125,7 +195,7 @@ public class Repository {
             public void onSuccess(JSONObject ApiResponse) {
                 try {
                     //get the title of the wiki page from the wiki search api
-                    String animalname = null;
+                    String animalname;
                     animalname = ApiResponse.getJSONObject("query").getJSONArray("search").getJSONObject(0).getString("title");
                     Log.d(TAG, "animalname:");
                     Log.d(TAG, animalname);
@@ -217,19 +287,22 @@ public class Repository {
             @Override
             public void run() {
                 try {
-
+                    Log.d(TAG, "uploadImage: runnable started");
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     image.compress(Bitmap.CompressFormat.JPEG, 50, baos);
                     byte[] data = baos.toByteArray();
 
                     StorageReference storageRef = storage.getReference();
-                    StorageReference imageRef = storageRef.child("public/images/" + Calendar.getInstance().getTime());
+                    Log.d(TAG, "uploadImage: user" + user);
+                    StorageReference imageRef = storageRef.child("images/" + user.getUid() + "/" + Calendar.getInstance().getTime());
 
                     UploadTask uploadTask = imageRef.putBytes(data);
                     uploadTask.addOnFailureListener(exception -> {
+                        Log.d(TAG, "uploadImage: failed to upload imagem, exception: " + exception);
                         Toast toast = Toast.makeText(context, "Couldn't upload image", Toast.LENGTH_SHORT);
                         toast.show();
                     }).addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        Log.d(TAG, "uploadImage: successfully uploaded image");
                         Toast toast = Toast.makeText(context, "Image uploaded", Toast.LENGTH_SHORT);
                         toast.show();
                         callback.onComplete(uri);
@@ -240,7 +313,7 @@ public class Repository {
         });
     }
 
-    public String getLocalityFromLatLong(double latitude, double longitude)  {
+    public String getLocalityFromLatLong(double latitude, double longitude) {
         // Uses code from https://stackoverflow.com/questions/2296377/how-to-get-city-name-from-latitude-and-longitude-coordinates-in-google-maps
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         List<Address> addresses = null;

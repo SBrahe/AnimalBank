@@ -1,4 +1,4 @@
-package dk.au.mad21spring.animalbank;
+package dk.au.mad21spring.animalbank.CameraView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -29,7 +30,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -40,7 +40,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import static dk.au.mad21spring.animalbank.Constants.CAMERA_PERMISSION_REQUEST_CODE;
+import dk.au.mad21spring.animalbank.R;
+
+import static dk.au.mad21spring.animalbank.Constants.ALL_PERMISSIONS_REQUEST_CODE;
 import static dk.au.mad21spring.animalbank.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 
 //Inspiration drawn from https://github.com/akhilbattula/android-camerax-java/blob/98593fbd93db214bb5551106f95e4fed348d42d5/app/src/main/java/com/akhil/cameraxjavademo/MainActivity.java#L149
@@ -68,13 +70,8 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
 
         //Make sure the UI starts out in the correct state:
         this.goToCaptureImageMode();
+        requestAllPermissions(); //Camera gets init in onRequestPermissionsResult
 
-        //Init camera
-        if (hasPermissions()) {
-            this.startCamera();
-        } else {
-            ActivityCompat.requestPermissions(getActivity(), REQUIRED_PERMISSIONS, CAMERA_PERMISSION_REQUEST_CODE);
-        }
         //For retrieving location data:
         this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         //Init back stack handling.
@@ -99,7 +96,6 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
             this.getChildFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new AddAnimalFragment()).commitNow();
         });
     }
-
 
 
     private void addReturnFromAddAnimalListener() {
@@ -127,25 +123,40 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
     /*----------------------------------- PERMISSIONS ----------------------------------------*/
     /*----------------------------------------------------------------------------------------*/
 
-    //Checks whether permissions has already been granted by user.
-    boolean hasPermissions() {
-        for (String permission : REQUIRED_PERMISSIONS) {
-            if (ContextCompat.checkSelfPermission(getActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-        return true;
+    void requestAllPermissions() {
+        requestPermissions(REQUIRED_PERMISSIONS, ALL_PERMISSIONS_REQUEST_CODE);
     }
+
+    //Checks whether permissions has already been granted by user.
+    boolean hasCameraPermission() {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+        return false;
+    }
+
+    boolean hasLocationPermission() {
+        boolean FINE_LOCATION_PERMISSION = (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED);
+        boolean COARSE_LOCATION_PERMISSION = (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED);
+        if (FINE_LOCATION_PERMISSION && COARSE_LOCATION_PERMISSION) {
+            return true;
+        }
+        return false;
+    }
+
 
     //Will be called when user has been asked for permissions.
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
-            if (hasPermissions()) {
-                this.startCamera();
-            }
+        if (requestCode == ALL_PERMISSIONS_REQUEST_CODE && hasCameraPermission()) {
+            //Happens at startup
+            this.startCamera();
         }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE && hasLocationPermission()) {
+            getLocation(location -> {
+                this.locationAtCapture = location;
+            });
+        }
     }
 
 
@@ -160,10 +171,10 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
 
     @SuppressLint("MissingPermission")
     private void getLocation(OnSuccessListener<Location> listener) {
-        if (hasPermissions()) {
+        if (hasLocationPermission()) {
             this.fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), listener);
         } else {
-            ActivityCompat.requestPermissions(getActivity(), REQUIRED_PERMISSIONS, LOCATION_PERMISSION_REQUEST_CODE);
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
 
@@ -222,9 +233,12 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
                 getLocation(new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
-                        //TODO: Handle if a null location is received.
-                        locationAtCapture = location;
-                        Log.e("locationatcapture", location.toString());
+                        try {
+                            locationAtCapture = location;
+                            Log.e("locationatcapture", location.toString());
+                        } catch (java.lang.NullPointerException exception) {
+                            locationAtCapture = null;
+                        }
                     }
                 });
                 goToAddAnimalMode();

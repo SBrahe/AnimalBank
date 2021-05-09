@@ -1,4 +1,4 @@
-package dk.au.mad21spring.animalbank;
+package dk.au.mad21spring.animalbank.DataAccess;
 
 import com.android.volley.VolleyError;
 

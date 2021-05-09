@@ -3,8 +3,8 @@
     <string name="app_name">AnimalBank</string>
     <string name="action_sign_in">Log ind eller opret bruger</string>
     <string name="animal_name">Navn på dyret</string>
-    <string name="spotted_date">Set:</string>
-    <string name="spotted_location">Set i nærheden af:</string>
+    <string name="spotted_date">Spottet den:</string>
+    <string name="spotted_location">Spottet nær:</string>
     <string name="wiki_text">Info fra Wikipedia:</string>
     <string name="user_notes">Mine noter:</string>
     <string name="location_placeholder">Location placeholder</string>
