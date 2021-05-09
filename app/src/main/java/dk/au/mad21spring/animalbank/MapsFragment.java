@@ -34,6 +34,10 @@ public class MapsFragment extends Fragment {
     //Save ref in order to refresh manually.
     private GoogleMap map;
 
+    public MapsFragment(){
+        //Required empty public constructor
+    }
+
     private OnMapReadyCallback onMapReady = new OnMapReadyCallback() {
 
         @Override

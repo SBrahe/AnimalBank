@@ -45,6 +45,9 @@ public class AddAnimalFragment extends Fragment {
     private AddAnimalFragmentListener listener;
     private EditText txtEditAnimalName;
 
+    public AddAnimalFragment(){
+        // Required empty public constructor
+    }
 
 
     @Override

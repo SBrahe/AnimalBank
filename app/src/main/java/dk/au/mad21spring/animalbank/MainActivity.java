@@ -19,8 +19,9 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottom_navbar = findViewById(R.id.bottom_navbar);
         bottom_navbar.setOnNavigationItemSelectedListener(navbarListenser);
+        /*
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                new CameraParentFragment()).commit();
+                new CameraParentFragment()).commit();*/
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navbarListenser =
