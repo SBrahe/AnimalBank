@@ -1,4 +1,4 @@
-gitpackage dk.au.mad21spring.animalbank;
+package dk.au.mad21spring.animalbank;
 
 import android.view.LayoutInflater;
 import android.view.View;
