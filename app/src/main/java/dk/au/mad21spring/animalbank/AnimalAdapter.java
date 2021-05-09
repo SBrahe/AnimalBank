@@ -1,4 +1,4 @@
-package dk.au.mad21spring.animalbank;
+gitpackage dk.au.mad21spring.animalbank;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +13,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import dk.au.mad21spring.animalbank.AnimalFireStoreModel;
+import dk.au.mad21spring.animalbank.IAnimalListActionListener;
+
 
 public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder>{
 
@@ -20,7 +23,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
     private ArrayList<AnimalFireStoreModel> animals;
     private IAnimalListActionListener listener;
 
-    public AnimalAdapter(ArrayList<AnimalFireStoreModel> animalList,IAnimalListActionListener listener){
+    public AnimalAdapter(ArrayList<AnimalFireStoreModel> animalList, IAnimalListActionListener listener){
             animals=animalList;
             this.listener=listener;
     }
