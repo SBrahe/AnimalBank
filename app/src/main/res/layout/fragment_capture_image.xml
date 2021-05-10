@@ -30,7 +30,8 @@
             android:insetLeft="0dp"
             android:insetRight="0dp"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:strokeColor="@color/colorPrimaryDark"
+            app:strokeColor="?attr/colorPrimary"
+            app:backgroundTint="?attr/colorSecondary"
             />
 
 
