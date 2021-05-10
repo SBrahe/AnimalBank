@@ -23,6 +23,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -113,7 +114,8 @@ public class MapsFragment extends Fragment {
 
     private void addAnimalToMap(AnimalFireStoreModel animal, GoogleMap googleMap) {
         LatLng newAnimal = new LatLng(animal.getLatitude(), animal.getLongitude());
-        Marker marker =  googleMap.addMarker(new MarkerOptions().position(newAnimal).title(animal.getName()));
+        Marker marker =  googleMap.addMarker(new MarkerOptions().position(newAnimal).title(animal.getName())
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
         //Add marker/docref lookup which can be used to navigate to infoview when clicking markers.
         markerReferences.put(marker, animal.documentReference);
     }
