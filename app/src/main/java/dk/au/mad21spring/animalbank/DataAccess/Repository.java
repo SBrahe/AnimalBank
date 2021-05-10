@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -37,6 +38,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -107,6 +109,8 @@ public class Repository {
 
     }
 
+
+
     //Async iteration over all animals in collection
     public void getAllAnimalsAsync(Consumer<AnimalFireStoreModel> doForEach) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -116,6 +120,22 @@ public class Repository {
                 animal.documentReference = item.getReference();
                 doForEach.accept(animal);
             });
+            return null;
+        });
+    }
+
+    //Async iteration over all animals in collection
+    public void getAllAnimalsAsync(Consumer<AnimalFireStoreModel> doForEach, Runnable onFinish) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(user.getUid()).get().onSuccessTask((snapshot) -> {
+             Iterator<QueryDocumentSnapshot> it = snapshot.iterator();
+             while (it.hasNext()){
+                 QueryDocumentSnapshot animalSnapShot = it.next();
+                 AnimalFireStoreModel animal = animalSnapShot.toObject(AnimalFireStoreModel.class);
+                 animal.documentReference = animalSnapShot.getReference();
+                 doForEach.accept(animal);
+            }
+             onFinish.run();
             return null;
         });
     }
