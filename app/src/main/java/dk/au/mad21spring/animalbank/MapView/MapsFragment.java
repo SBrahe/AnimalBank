@@ -65,7 +65,7 @@ public class MapsFragment extends Fragment {
 
     void moveCamera(Location location){
         LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, 10);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, 13);
         map.moveCamera(update);
     }
 
