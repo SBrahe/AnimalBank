@@ -32,7 +32,7 @@
             tools:text="@string/animalNameTool" />
 
         <TextView
-            android:id="@+id/spottedOnText"
+            android:id="@+id/spottedOnTextInfoWindow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/animalNameText"
@@ -47,8 +47,8 @@
             android:id="@+id/spottedDateText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@id/spottedOnText"
-            android:layout_toEndOf="@id/spottedOnText"
+            android:layout_alignBaseline="@id/spottedOnTextInfoWindow"
+            android:layout_toEndOf="@id/spottedOnTextInfoWindow"
             android:padding="8dp"
             android:textSize="16sp"
             android:textStyle="bold"

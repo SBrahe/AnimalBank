@@ -19,4 +19,7 @@
     <string name="animalNameTool">Animal Name</string>
     <string name="spottedOnText">Set:</string>
     <string name="spottedDate">xx-xx-xxxx</string>
+    <string name="animalNameToolText">Navn</string>
+    <string name="spottedDateToolText">xx-xx-xxxx</string>
+    <string name="spottedOnTextInfoWindow">Spottet den:</string>
 </resources>
