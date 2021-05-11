@@ -33,6 +33,7 @@ public class ListFragment extends Fragment implements IAnimalListActionListener{
     private AnimalCollectionViewModel viewModel;
     private AnimalAdapter adapter;
     private View view;
+
     public ListFragment() {
         // Required empty public constructor
     }

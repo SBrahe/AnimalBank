@@ -26,7 +26,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
     private IAnimalListActionListener listener;
     private Context context;
 
-    public AnimalAdapter(ArrayList<AnimalFireStoreModel> animalList,IAnimalListActionListener listener,Context context){
+    public AnimalAdapter(ArrayList<AnimalFireStoreModel> animalList,IAnimalListActionListener listener){
             animals=animalList;
             this.listener=listener;
             this.context=context;
@@ -47,7 +47,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.animalNameText.setText(animals.get(position).getName());
         holder.spottedDateText.setText(animals.get(position).getDateShortString());
-        String near = Repository.getAnimalRepository(context)
+        String near = Repository.getAnimalRepository(holder.spottedNearText.getContext())
                 .getLocalityFromLatLong(animals.get(position).getLatitude(), animals.get(position).getLongitude());
         if (near != null) {
             holder.spottedNearText.setText(near);
