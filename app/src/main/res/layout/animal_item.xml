@@ -32,7 +32,7 @@
             tools:text="@string/animalNameTool" />
 
         <TextView
-            android:id="@+id/spottedOnTextInfoWindow"
+            android:id="@+id/spottedOnTextItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/animalNameText"
@@ -47,12 +47,33 @@
             android:id="@+id/spottedDateText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@id/spottedOnTextInfoWindow"
-            android:layout_toEndOf="@id/spottedOnTextInfoWindow"
+            android:layout_alignBaseline="@id/spottedOnTextItem"
+            android:layout_toEndOf="@id/spottedOnTextItem"
             android:padding="8dp"
             android:textSize="16sp"
             android:textStyle="bold"
             tools:text="@string/spottedDate" />
+
+        <TextView
+            android:id="@+id/spottedNearTextTool"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/spottedOnTextItem"
+            android:layout_centerHorizontal="true"
+            android:padding="8dp"
+            android:text="@string/spotted_location"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/spottedDateTextItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/spottedNearTextTool"
+            android:layout_toEndOf="@id/spottedNearTextTool"
+            android:padding="8dp"
+            android:textSize="16sp"
+            android:textStyle="bold" />
     </RelativeLayout>
 
 </androidx.cardview.widget.CardView>
