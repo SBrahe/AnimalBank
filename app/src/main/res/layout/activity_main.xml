@@ -18,8 +18,10 @@
         android:id="@+id/bottom_navbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_navbar" />
+        app:menu="@menu/bottom_navbar"
+        app:itemIconTint="@drawable/navbar_selector"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
