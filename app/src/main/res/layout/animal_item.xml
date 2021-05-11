@@ -30,6 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
+            android:layout_toRightOf="@id/animalImage"
             android:padding="8dp"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -41,10 +42,10 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/animalNameText"
             android:layout_centerHorizontal="true"
-            android:layout_alignLeft="@id/animalNameText"
+            android:layout_toRightOf="@id/animalImage"
             android:padding="8dp"
-            android:text="@string/spottedOnText"
-            android:textSize="16sp"
+            android:text="@string/spotted_date"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView
@@ -54,8 +55,8 @@
             android:layout_alignBaseline="@id/spottedOnTextItem"
             android:layout_toEndOf="@id/spottedOnTextItem"
             android:padding="8dp"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textStyle="normal"
             tools:text="@string/spottedDate" />
 
         <TextView
@@ -64,9 +65,10 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/spottedOnTextItem"
             android:layout_centerHorizontal="true"
+            android:layout_toRightOf="@id/animalImage"
             android:padding="8dp"
             android:text="@string/spotted_location"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView
@@ -76,8 +78,8 @@
             android:layout_alignBaseline="@id/spottedNearTextTool"
             android:layout_toEndOf="@id/spottedNearTextTool"
             android:padding="8dp"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textSize="14sp"
+            android:textStyle="normal" />
     </RelativeLayout>
 
 </com.google.android.material.card.MaterialCardView>

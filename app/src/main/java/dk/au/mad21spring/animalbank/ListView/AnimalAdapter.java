@@ -81,7 +81,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
             animalNameText = itemView.findViewById(R.id.animalNameText);
             spottedDateText = itemView.findViewById(R.id.spottedDateText);
             animalImage = itemView.findViewById(R.id.animalImage);
-            spottedNearText = itemView.findViewById(R.id.spottedOnTextItem);
+            spottedNearText = itemView.findViewById(R.id.spottedNearTextItem);
 
             itemView.setOnClickListener(this);
         }
