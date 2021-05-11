@@ -1,5 +1,6 @@
 package dk.au.mad21spring.animalbank.ListView;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,10 +24,12 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
 
     private ArrayList<AnimalFireStoreModel> animals;
     private IAnimalListActionListener listener;
+    private Context context;
 
-    public AnimalAdapter(ArrayList<AnimalFireStoreModel> animalList,IAnimalListActionListener listener){
+    public AnimalAdapter(ArrayList<AnimalFireStoreModel> animalList,IAnimalListActionListener listener,Context context){
             animals=animalList;
             this.listener=listener;
+            this.context=context;
     }
 
     public void UpdateList(ArrayList<AnimalFireStoreModel> updateAnimals){
@@ -44,7 +47,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.animalNameText.setText(animals.get(position).getName());
         holder.spottedDateText.setText(animals.get(position).getDateShortString());
-        String near = Repository.getAnimalRepository(getApplicationContext())
+        String near = Repository.getAnimalRepository(context)
                 .getLocalityFromLatLong(animals.get(position).getLatitude(), animals.get(position).getLongitude());
         if (near != null) {
             holder.spottedNearText.setText(near);
