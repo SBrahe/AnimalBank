@@ -19,6 +19,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -96,8 +97,13 @@ public class Repository {
         AnimalFireStoreModel toUpload = new AnimalFireStoreModel(animal);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference animalRef = db.collection(user.getUid()).document(); //create new animal document in firestore
-        onSuccess.accept(animalRef);
-        animalRef.set(toUpload);
+        animalRef.set(toUpload).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                onSuccess.accept(animalRef);
+            }
+        });
+
         Log.d(TAG, "insertAnimal: attempting to upload image");
         this.uploadImage(animal.image, imageUri -> {
             animalRef.update(IMAGE_URI_FIELD, imageUri.toString());

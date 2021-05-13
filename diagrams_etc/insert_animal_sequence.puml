@@ -1,0 +1,72 @@
+@startuml animal_bank_take_photo_sequence
+hide footbox
+skinparam shadowing false
+skinparam BoxPadding 10
+
+Mainframe Sequence: Capture Animal
+
+
+actor User
+participant "CaptureImageFragment"
+participant "AddAnimalFragment"
+participant "CameraParentFragment"
+participant "CameraX"
+participant "FusedLocationProviderClient"
+participant "Repository"
+
+
+User->CaptureImageFragment : Clicks shutter button
+activate CaptureImageFragment
+CaptureImageFragment->CameraParentFragment : onCaptureImagePressed()
+activate CameraParentFragment
+CameraParentFragment->>CameraX:takePicture()
+CaptureImageFragment<--CameraParentFragment
+deactivate CameraParentFragment
+deactivate CaptureImageFragment
+
+
+CameraX->CameraX: onCaptureSuccess
+activate CameraX
+CameraX->>FusedLocationProviderClient:getLastLocation()
+CameraX->CameraParentFragment:goToAddAnimalMode()
+activate CameraParentFragment
+CameraParentFragment->>CameraParentFragment : post to UI thread
+CameraX<--CameraParentFragment
+deactivate CameraParentFragment
+deactivate CameraX
+
+
+CameraParentFragment->CameraParentFragment:showCapturedImage()
+CameraParentFragment->CaptureImageFragment !! : Remove
+CameraParentFragment->AddAnimalFragment ** : Insert
+
+
+
+FusedLocationProviderClient->FusedLocationProviderClient: onSuccess()
+activate FusedLocationProviderClient
+FusedLocationProviderClient->CameraParentFragment:setLastLocation()
+activate CameraParentFragment
+FusedLocationProviderClient<--CameraParentFragment
+deactivate CameraParentFragment
+deactivate FusedLocationProviderClient
+
+User->AddAnimalFragment : Inputs animal name
+User->AddAnimalFragment : Presses enter
+activate AddAnimalFragment
+AddAnimalFragment->AddAnimalFragment: onEnterPressed()
+AddAnimalFragment->>Repository:insertAnimal()
+
+deactivate AddAnimalFragment
+
+ref over Repository : Sequence: InsertAnimal
+
+Repository->Repository: OnSuccess()
+activate Repository
+Repository->AddAnimalFragment:goToInfoActivity()
+activate AddAnimalFragment
+Repository<--AddAnimalFragment
+deactivate AddAnimalFragment
+deactivate Repository
+
+
+@enduml
