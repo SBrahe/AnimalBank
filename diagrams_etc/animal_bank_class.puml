@@ -1,0 +1,56 @@
+@startuml animal_bank_class
+hide circle
+skinparam shadowing false
+
+package CameraView{
+    class AddAnimalFragment{}
+    class CameraParentFragment{}
+    class CaptureImageFragment{}
+}
+
+package DataAccess{
+    class AnimalFireStoreModel{}
+    class Repository{}
+}
+
+package Domain{
+    class Animal{}
+}
+
+package InfoView{
+    class FullScreenImgActivity{}
+    class InfoActivity{}
+}
+
+package ListView{
+    class ListFragment{}
+    class AnimalAdapter{}
+    class IAnimalListActionListener{}
+}
+
+package MapView{
+    class MapsFragment{}
+}
+
+package Services{
+    class AnimalUpdateWorker{}
+}
+
+package SignInView{
+    class SignInActivity{}
+}
+
+class NavBarActivity{}
+
+NavBarActivity-->CameraView
+NavBarActivity-->ListView
+NavBarActivity-->MapView
+
+CameraView->DataAccess
+CameraView--->Domain
+ListView-->DataAccess
+DataAccess<-MapView
+InfoView--->DataAccess
+Services--->DataAccess
+
+@enduml
