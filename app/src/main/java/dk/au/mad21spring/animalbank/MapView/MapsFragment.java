@@ -37,6 +37,7 @@ import dk.au.mad21spring.animalbank.DataAccess.Repository;
 import dk.au.mad21spring.animalbank.InfoView.InfoActivity;
 import dk.au.mad21spring.animalbank.R;
 
+import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 import static dk.au.mad21spring.animalbank.Constants.ANIMAL_REF_INTENT_EXTRA;
 import static dk.au.mad21spring.animalbank.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 
@@ -53,7 +54,9 @@ public class MapsFragment extends Fragment {
         public void onMapReady(GoogleMap googleMap) {
             map = googleMap;
             populateMap();
+            map.setInfoWindowAdapter(new InfoWindowAdapter(getActivity().getApplicationContext()));
             moveToCurrentLocation();
+
         }
     };
 
@@ -65,7 +68,7 @@ public class MapsFragment extends Fragment {
 
     void moveCamera(Location location){
         LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, 13);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, 10);
         map.moveCamera(update);
     }
 
@@ -114,7 +117,8 @@ public class MapsFragment extends Fragment {
 
     private void addAnimalToMap(AnimalFireStoreModel animal, GoogleMap googleMap) {
         LatLng newAnimal = new LatLng(animal.getLatitude(), animal.getLongitude());
-        Marker marker =  googleMap.addMarker(new MarkerOptions().position(newAnimal).title(animal.getName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+        Marker marker =  googleMap.addMarker(new MarkerOptions().position(newAnimal).title(animal.getName()).snippet(animal.getDateShortString())
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
         //Add marker/docref lookup which can be used to navigate to infoview when clicking markers.
         markerReferences.put(marker, animal.documentReference);
     }

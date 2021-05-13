@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/animalImage"
+            android:layout_width="189dp"
+            android:layout_height="271dp"
+            android:layout_alignParentStart="true"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/animalNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:padding="8dp"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            tools:text="@string/animalNameTool" />
+
+        <TextView
+            android:id="@+id/spottedOnTextInfoWindow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/animalNameText"
+            android:layout_alignLeft="@id/animalNameText"
+            android:layout_centerHorizontal="true"
+            android:padding="8dp"
+            android:text="@string/spottedOnText"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/spottedDateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/spottedOnTextInfoWindow"
+            android:layout_toEndOf="@id/spottedOnTextInfoWindow"
+            android:padding="8dp"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            tools:text="@string/spottedDate" />
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

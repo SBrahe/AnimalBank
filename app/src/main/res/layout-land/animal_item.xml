@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"
     android:layout_marginStart="10dp"
-    android:layout_marginEnd="10dp"
-    app:strokeColor="?attr/colorPrimaryVariant"
-    app:strokeWidth="2dp"
-    >
+    android:layout_marginEnd="10dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -30,56 +26,33 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_toRightOf="@id/animalImage"
             android:padding="8dp"
             android:textSize="16sp"
             android:textStyle="bold"
             tools:text="@string/animalNameTool" />
 
         <TextView
-            android:id="@+id/spottedOnTextItem"
+            android:id="@+id/spottedOnTextInfoWindow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/animalNameText"
             android:layout_centerHorizontal="true"
-            android:layout_toRightOf="@id/animalImage"
+            android:layout_alignLeft="@id/animalNameText"
             android:padding="8dp"
-            android:text="@string/spotted_date"
-            android:textSize="14sp"
+            android:text="@string/spottedOnText"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/spottedDateText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@id/spottedOnTextItem"
-            android:layout_toEndOf="@id/spottedOnTextItem"
+            android:layout_alignBaseline="@id/spottedOnTextInfoWindow"
+            android:layout_toEndOf="@id/spottedOnTextInfoWindow"
             android:padding="8dp"
-            android:textSize="14sp"
-            android:textStyle="normal"
+            android:textSize="16sp"
+            android:textStyle="bold"
             tools:text="@string/spottedDate" />
-
-        <TextView
-            android:id="@+id/spottedNearTextTool"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/spottedOnTextItem"
-            android:layout_centerHorizontal="true"
-            android:layout_toRightOf="@id/animalImage"
-            android:padding="8dp"
-            android:text="@string/spotted_location"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/spottedNearTextItem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@id/spottedNearTextTool"
-            android:layout_toEndOf="@id/spottedNearTextTool"
-            android:padding="8dp"
-            android:textSize="14sp"
-            android:textStyle="normal" />
     </RelativeLayout>
 
-</com.google.android.material.card.MaterialCardView>
+</androidx.cardview.widget.CardView>

@@ -56,6 +56,10 @@ public class CameraParentFragment extends Fragment implements AddAnimalFragment.
     private FusedLocationProviderClient fusedLocationClient;
     private Location locationAtCapture;
 
+    public CameraParentFragment(){
+        // Required empty public constructor
+    }
+
 
     @Nullable
     @Override

@@ -17,6 +17,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="animalNameTool">Animal Name</string>
-    <string name="spottedOnText">Set:</string>
+    <string name="spottedOnText">Spottet den:</string>
     <string name="spottedDate">xx-xx-xxxx</string>
+    <string name="animalNameToolText">Navn</string>
+    <string name="spottedDateToolText">xx-xx-xxxx</string>
+    <string name="spottedOnTextInfoWindow">Spottet den:</string>
 </resources>

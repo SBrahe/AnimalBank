@@ -1,5 +1,6 @@
 package dk.au.mad21spring.animalbank.ListView;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import dk.au.mad21spring.animalbank.DataAccess.AnimalFireStoreModel;
+import dk.au.mad21spring.animalbank.DataAccess.Repository;
 import dk.au.mad21spring.animalbank.R;
 
 
@@ -22,10 +24,12 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
 
     private ArrayList<AnimalFireStoreModel> animals;
     private IAnimalListActionListener listener;
+    private Context context;
 
     public AnimalAdapter(ArrayList<AnimalFireStoreModel> animalList,IAnimalListActionListener listener){
             animals=animalList;
             this.listener=listener;
+            this.context=context;
     }
 
     public void UpdateList(ArrayList<AnimalFireStoreModel> updateAnimals){
@@ -43,6 +47,13 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.animalNameText.setText(animals.get(position).getName());
         holder.spottedDateText.setText(animals.get(position).getDateShortString());
+        String near = Repository.getAnimalRepository(holder.spottedNearText.getContext())
+                .getLocalityFromLatLong(animals.get(position).getLatitude(), animals.get(position).getLongitude());
+        if (near != null) {
+            holder.spottedNearText.setText(near);
+        } else {
+            holder.spottedNearText.setText(animals.get(position).getLatitude() + ", " + animals.get(position).getLongitude());
+        }
         Picasso.get()
                 .load(animals.get(position).getImageURI())
                 .into(holder.animalImage);
@@ -62,6 +73,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
         public TextView animalNameText;
         public TextView spottedDateText;
         public ImageView animalImage;
+        public TextView spottedNearText;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -69,6 +81,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
             animalNameText = itemView.findViewById(R.id.animalNameText);
             spottedDateText = itemView.findViewById(R.id.spottedDateText);
             animalImage = itemView.findViewById(R.id.animalImage);
+            spottedNearText = itemView.findViewById(R.id.spottedNearTextItem);
 
             itemView.setOnClickListener(this);
         }

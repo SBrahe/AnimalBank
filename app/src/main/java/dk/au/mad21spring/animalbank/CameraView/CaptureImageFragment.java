@@ -19,6 +19,10 @@ public class CaptureImageFragment extends Fragment {
     private CaptureImageFragmentListener listener;
     Button captureBtn;
 
+    public CaptureImageFragment(){
+        //Required empty public constructor
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
